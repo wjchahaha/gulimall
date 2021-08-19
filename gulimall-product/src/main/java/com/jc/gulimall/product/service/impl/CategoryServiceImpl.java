@@ -59,6 +59,16 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         baseMapper.deleteBatchIds(asList);
     }
 
+    @Override
+    public int updateByIds(CategoryEntity[] categorys) {
+        int count = 0;
+        for(int i = 0;i<categorys.length;i++){
+            count +=baseMapper.update(categorys[i],null);
+        }
+
+        return count;
+    }
+
 
     private List<CategoryEntity> getChildrens(CategoryEntity target,List<CategoryEntity> categoryEntities){
 
