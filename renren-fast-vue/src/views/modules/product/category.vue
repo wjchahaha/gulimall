@@ -8,6 +8,7 @@
     >
     </el-switch>
     <el-button v-if="draggable" @click="batchUpdate">批量保存</el-button>
+    <el-button type="danger" @click="batchDelete">批量删除</el-button>
     <el-tree
       :data="menus"
       :props="defaultProps"
@@ -19,6 +20,7 @@
       :draggable="draggable"
       :allow-drop="allowDrop"
       @node-drop="handleDrop"
+      ref="menutree"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -116,6 +118,34 @@ export default {
     };
   },
   methods: {
+    batchDelete(){
+      let catIds=this.$refs.menutree.getCheckedKeys();
+      console.log("要被删除的数组",catIds);
+
+      this.$confirm(`确定要批量删除【${catIds}】菜单嘛？`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(()=>{
+        this.$http({
+        url: this.$http.adornUrl('/product/category/delete'),
+        method: 'post',
+        data: this.$http.adornData(catIds, false)
+        }).then(({ data }) => {
+          this.$message({
+          message: "批量删除成功",
+          type: "success",
+        });
+        //刷新菜单 展出新菜单
+        this.getMenus();
+        
+        // this.pCid = [];
+         });
+      }).catch(()=>{
+
+      })
+
+    },
     batchUpdate() {
       console.log("updateNode", this.updateNodes);
 
