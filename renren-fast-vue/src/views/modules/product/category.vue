@@ -1,6 +1,13 @@
 <!--  -->
 <template>
   <div class="">
+    <el-switch
+      v-model="draggable"
+      active-text="已开启拖拽"
+      inactive-text="已关闭拖拽"
+    >
+    </el-switch>
+    <el-button v-if="draggable" @click="batchUpdate">批量保存</el-button>
     <el-tree
       :data="menus"
       :props="defaultProps"
@@ -9,7 +16,7 @@
       show-checkbox
       node-key="catId"
       :default-expanded-keys="expandedKey"
-      draggable
+      :draggable="draggable"
       :allow-drop="allowDrop"
       @node-drop="handleDrop"
     >
@@ -82,6 +89,8 @@ export default {
   components: {},
   data() {
     return {
+      pCid: [],
+      draggable: false,
       updateNodes: [],
       maxLevle: 0,
       title: "",
@@ -107,13 +116,33 @@ export default {
     };
   },
   methods: {
+    batchUpdate() {
+      console.log("updateNode", this.updateNodes);
+
+      this.$http({
+        url: this.$http.adornUrl("/product/category/update/sort"),
+        method: "post",
+        data: this.$http.adornData(this.updateNodes, false),
+      }).then(({ data }) => {
+        this.$message({
+          message: "菜单顺序修改成功",
+          type: "success",
+        });
+        //刷新菜单 展出新菜单
+        this.updateNodes = [];
+        this.getMenus();
+        this.expandedKey = this.pCid;
+        this.pCid = [];
+      });
+    },
     allowDrop(draggingNode, dropNode, type) {
       console.log("allow", draggingNode, dropNode, type);
       //计算要被拖拽节点的子节点的最大深度
-      this.coutnNodelevel(draggingNode.data);
+      this.coutnNodelevel(draggingNode);
       //要被拖动节点的总深度
-      var deep = this.maxLevle == 0 ? 1:this.maxLevle -draggingNode.data.catLevel + 1;
-      
+      var deep =
+        this.maxLevle == 0 ? 1 : this.maxLevle - draggingNode.level + 1;
+
       this.maxLevle = 0;
       console.log("深度" + deep);
       if (type == "inner") {
@@ -140,6 +169,7 @@ export default {
             : dropNode.parent.data.catId;
         brothers = dropNode.parent.childNodes;
       }
+      this.pCid.push(pCid);
       //当前节点的最新顺序
       for (let i = 0; i < brothers.length; i++) {
         //如果遍历到当前节点
@@ -162,22 +192,6 @@ export default {
           this.updateNodes.push({ catId: brothers[i].data.catId, sort: i });
         }
       }
-      console.log("updateNode", this.updateNodes);
-
-      this.$http({
-        url: this.$http.adornUrl("/product/category/update/sort"),
-        method: "post",
-        data: this.$http.adornData(this.updateNodes, false),
-      }).then(({ data }) => {
-        this.$message({
-          message: "添加成功",
-          type: "success",
-        });
-        //刷新菜单 展出新菜单
-        this.updateNodes = [];
-        this.getMenus();
-        this.expandedKey = [pCid];
-      });
 
       //当前拖拽节点的最新层级
     },
@@ -199,13 +213,13 @@ export default {
     coutnNodelevel(node) {
       // console.log("Wozheng");
       //该节点不空 而且还有子节点 计算其层级
-      if (node.children != null && node.children.length > 0) {
-        for (let i = 0; i < node.children.length; i++) {
+      if (node.childNodes != null && node.childNodes.length > 0) {
+        for (let i = 0; i < node.childNodes.length; i++) {
           //找最大层级
-          if (node.children[i].catLevel > this.maxLevle) {
-            this.maxLevle = node.children[i].catLevel;
+          if (node.childNodes[i].level > this.maxLevle) {
+            this.maxLevle = node.childNodes[i].level;
           }
-          this.coutnNodelevel(node.children[i]);
+          this.coutnNodelevel(node.childNodes[i]);
         }
       }
     },
@@ -236,6 +250,7 @@ export default {
       });
     },
     addCategory() {
+      console.log("提交的三级数据", this.category);
       this.$http({
         url: this.$http.adornUrl("/product/category/save"),
         method: "post",
@@ -245,6 +260,7 @@ export default {
           message: "添加成功",
           type: "success",
         });
+        
         this.dialogVisible = false;
         this.getMenus();
         this.expandedKey = [this.category.parentCid];
@@ -274,7 +290,6 @@ export default {
       this.category.productCount = 0;
       this.category.sort = 0;
       this.category.showStatus = 1;
-      console.log("提交的三级数据", this.category);
     },
     remove(node, data) {
       var ids = [data.catId];
