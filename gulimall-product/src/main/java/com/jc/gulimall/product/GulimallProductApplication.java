@@ -32,6 +32,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *       效果：校验错误会有响应
  *
  *       添加另一个字段BindingResult
+ *   5 )统一的异常处理
  */
 @EnableDiscoveryClient
 @SpringBootApplication
