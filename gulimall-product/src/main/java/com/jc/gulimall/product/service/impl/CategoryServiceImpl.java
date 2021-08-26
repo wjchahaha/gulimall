@@ -1,5 +1,7 @@
 package com.jc.gulimall.product.service.impl;
 
+import com.jc.gulimall.product.dao.BrandDao;
+import com.jc.gulimall.product.entity.BrandEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import com.jc.gulimall.product.service.CategoryService;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -68,6 +71,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         return count;
     }
+
+
 
 
     private List<CategoryEntity> getChildrens(CategoryEntity target,List<CategoryEntity> categoryEntities){

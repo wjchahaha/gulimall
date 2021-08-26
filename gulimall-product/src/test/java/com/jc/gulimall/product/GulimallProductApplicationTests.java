@@ -1,19 +1,33 @@
 package com.jc.gulimall.product;
 
+
 import com.jc.gulimall.product.entity.BrandEntity;
 import com.jc.gulimall.product.service.BrandService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.annotation.Resource;
+import java.io.*;
 import java.util.Iterator;
 
+/**
+ * 1.引入oos-starter
+ * 2.配置子账户信息 endpoint
+ * 3.使用oosclient
+ */
 @SpringBootTest
 class GulimallProductApplicationTests {
 
 
     @Autowired
     BrandService brandService;
+
+//    @Resource
+//    private OSSClient ossClient;
+
+
+
     @Test
     void contextLoads() {
 //        BrandEntity brandEntity = new BrandEntity();

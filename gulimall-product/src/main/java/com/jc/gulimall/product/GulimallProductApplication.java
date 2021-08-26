@@ -19,9 +19,19 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *          2）配置数据源
  *              配置连接数据库信息
  *      2.配置mybatis-plus
- *          1）
+ *          1）使用@MapperScan
+ *          2) 告诉Mybatis-Plus,sql映射文件位置
+ *  3）逻辑删除
+ *      1）配置逻辑删除字段
+ *       logic-delete-field: showStatus
+ *       logic-delete-value: 0
+ *       logic-not-delete-value: 1
+ *   4）JSR303
+ *      1) 给Bean字段添加校验注解，并定义自己的message提示
+ *      2) 在请求参数中添加@Valid  例如@Valid @RequestBody BrandEntity brand
+ *       效果：校验错误会有响应
  *
- *
+ *       添加另一个字段BindingResult
  */
 @EnableDiscoveryClient
 @SpringBootApplication

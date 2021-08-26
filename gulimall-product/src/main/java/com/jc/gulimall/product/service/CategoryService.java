@@ -2,6 +2,7 @@ package com.jc.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jc.common.utils.PageUtils;
+import com.jc.gulimall.product.entity.BrandEntity;
 import com.jc.gulimall.product.entity.CategoryEntity;
 
 import java.util.List;
@@ -23,5 +24,7 @@ public interface CategoryService extends IService<CategoryEntity> {
     void removeMenuByIds(List<Long> asList);
 
     int updateByIds(CategoryEntity[] categorys);
+
+
 }
 
