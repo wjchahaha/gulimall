@@ -32,6 +32,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *       效果：校验错误会有响应
  *
  *       添加另一个字段BindingResult
+ *
+ *       分组校验：
+ *       在Entity字段注解的后边加上 groups={xx.class}
+ *         //@NotNull(message = "logo不能为空！",groups = {AddGroup.class,UpdateGroup.class})
+ *       在对应的Controller方法上，要检验的Bean@
  *   5 )统一的异常处理
  */
 @EnableDiscoveryClient
