@@ -37,6 +37,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *       在Entity字段注解的后边加上 groups={xx.class}
  *         //@NotNull(message = "logo不能为空！",groups = {AddGroup.class,UpdateGroup.class})
  *       在对应的Controller方法上，要检验的Bean@
+ *
+ *       自定义校验：
+ *       1）编写一个自定义的校验注解
+ *       2）编写一个自定义的校验器
+ *       3)将他们关联起来
  *   5 )统一的异常处理
  */
 @EnableDiscoveryClient

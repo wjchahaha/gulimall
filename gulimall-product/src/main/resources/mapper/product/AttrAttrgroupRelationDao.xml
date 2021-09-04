@@ -11,5 +11,11 @@
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
 
+    <delete id="batchDeleteRelation">
+            DELETE FROM `pms_attr_attrgroup_relation` where
+            <foreach collection="entitys" item="item" separator="OR">
+                attr_id = #{item.attrId} AND attr_group_id = #{item.attrGroupId}
+            </foreach>
+    </delete>
 
 </mapper>

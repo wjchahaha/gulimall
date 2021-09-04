@@ -3,12 +3,15 @@ package com.jc.gulimall.product;
 
 import com.jc.gulimall.product.entity.BrandEntity;
 import com.jc.gulimall.product.service.BrandService;
+import com.jc.gulimall.product.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -16,12 +19,23 @@ import java.util.Iterator;
  * 2.配置子账户信息 endpoint
  * 3.使用oosclient
  */
+@Slf4j
 @SpringBootTest
 class GulimallProductApplicationTests {
 
 
     @Autowired
     BrandService brandService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Test
+    public void testFindPath(){
+        Long[] catelogPath = categoryService.findCatelogPath(225L);
+
+        log.info("完整路径:{}", Arrays.asList(catelogPath));
+    }
 
 //    @Resource
 //    private OSSClient ossClient;

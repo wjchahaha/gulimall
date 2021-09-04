@@ -1,14 +1,16 @@
 package com.jc.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jc.gulimall.product.entity.BrandEntity;
+import com.jc.gulimall.product.entity.CategoryEntity;
+import com.jc.gulimall.product.service.BrandService;
+import com.jc.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.jc.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.jc.gulimall.product.service.CategoryBrandRelationService;
@@ -30,6 +32,25 @@ public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
 
+//    @Autowired
+//    private BrandService brandService;
+//
+//    @Autowired
+//    private CategoryService categoryService;
+
+    /**
+     * 获取当前品牌关联的所有分类列表
+     * @param brandId
+     * @return
+     */
+    @GetMapping("/catelog/list")
+    public R catelogList(@RequestParam("brandId") Long brandId){
+        List<CategoryBrandRelationEntity> data = categoryBrandRelationService.list(
+                new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id",brandId)
+        );
+
+        return R.ok().put("data", data);
+    }
     /**
      * 列表
      */
@@ -56,7 +77,9 @@ public class CategoryBrandRelationController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
+
+
+        categoryBrandRelationService.saveDetail(categoryBrandRelation);
 
         return R.ok();
     }

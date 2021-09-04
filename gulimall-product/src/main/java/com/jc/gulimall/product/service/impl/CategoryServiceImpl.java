@@ -1,14 +1,17 @@
 package com.jc.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.jc.gulimall.product.dao.BrandDao;
+import com.jc.gulimall.product.dao.CategoryBrandRelationDao;
 import com.jc.gulimall.product.entity.BrandEntity;
+import com.jc.gulimall.product.entity.CategoryBrandRelationEntity;
+import com.jc.gulimall.product.service.CategoryBrandRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -20,11 +23,17 @@ import com.jc.common.utils.Query;
 import com.jc.gulimall.product.dao.CategoryDao;
 import com.jc.gulimall.product.entity.CategoryEntity;
 import com.jc.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
+    @Autowired
+    private CategoryDao categoryDao;
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -72,7 +81,37 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return count;
     }
 
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        List<Long> paths = new ArrayList<>();
+        List<Long> parentPath = findParentPath(catelogId, paths);
 
+        Collections.reverse(parentPath) ;
+
+        return (Long[]) parentPath.toArray(new Long[parentPath.size()]);
+    }
+
+    @Transactional
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        this.updateById(category);
+
+        //级联更新
+        categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+
+    }
+
+    //225->225.P->225.P.P
+    public List<Long> findParentPath(Long catelogId,List<Long> paths){
+        paths.add(catelogId);
+        CategoryEntity byId = this.getById(catelogId);
+
+        if(byId.getParentCid() !=0){
+            List<Long> parentPath = findParentPath(byId.getParentCid(), paths);
+        }
+
+        return paths;
+    }
 
 
     private List<CategoryEntity> getChildrens(CategoryEntity target,List<CategoryEntity> categoryEntities){
