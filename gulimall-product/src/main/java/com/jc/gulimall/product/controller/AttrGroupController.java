@@ -6,16 +6,15 @@ import java.util.Map;
 
 import com.jc.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.jc.gulimall.product.entity.AttrEntity;
+import com.jc.gulimall.product.service.AttrAttrgroupRelationService;
 import com.jc.gulimall.product.service.AttrService;
 import com.jc.gulimall.product.service.CategoryService;
+import com.jc.gulimall.product.vo.AttrRelationVo;
 import com.jc.gulimall.product.vo.AttrRespVo;
 import com.jc.gulimall.product.vo.AttrVo;
+import com.jc.gulimall.product.vo.WithAttr;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.jc.gulimall.product.entity.AttrGroupEntity;
 import com.jc.gulimall.product.service.AttrGroupService;
@@ -42,6 +41,21 @@ public class AttrGroupController {
 
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private AttrAttrgroupRelationService relationService;
+
+    /**
+     * 获取分享下所有属性分组以及对应的所有属性
+     * @param catelogId
+     * @return
+     */
+    @GetMapping("/{catelogId}/withattr")
+    public R allGroupAndRelationAttrByCatId(@PathVariable("catelogId") Long catelogId){
+
+        List<WithAttr> data = attrGroupService.allGroupAndRelationAttrByCatId(catelogId);
+        return R.ok().put("data",data);
+    }
     /**
      * 列表
      */
@@ -66,6 +80,18 @@ public class AttrGroupController {
 
 
         return R.ok().put("data", entityList);
+    }
+
+//    @RequestMapping("/attr/relation")
+//    public R addAttrRelation(@RequestBody List<AttrRelationVo> vos){
+//        relationService.saveBatch(vos);
+//        return R.ok();
+//    }
+
+    @RequestMapping("/attr/relation")
+    public R addAttrRelation(@RequestBody List<AttrAttrgroupRelationEntity> entities){
+        relationService.saveBatch2(entities);
+        return R.ok();
     }
 
 
@@ -120,5 +146,17 @@ public class AttrGroupController {
 
         return R.ok();
     }
+
+    @RequestMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(@RequestParam Map<String,Object> params,
+                          @PathVariable("attrgroupId") Long attrgroupId){
+        PageUtils page = attrService.getOtherAttr(params,attrgroupId);
+        //失败
+//        PageUtils page = attrService.getOtherAttr2(params,attrgroupId);
+
+        return R.ok().put("data",page);
+    }
+
+
 
 }

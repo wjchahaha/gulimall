@@ -28,6 +28,10 @@ public interface AttrService extends IService<AttrEntity> {
 
     List<AttrEntity> getRelationAttr(Long attrgroupId);
 
+    PageUtils getOtherAttr(Map<String, Object> params, Long attrgroupId);
+
+    PageUtils getOtherAttr2(Map<String, Object> params, Long attrgroupId);
+
 //    PageUtils querySalePage(Map<String, Object> params, Long catelogId);
 }
 

@@ -15,10 +15,23 @@ spring:
           filters:
             - RewritePath=/api/?(?<segment>.*),/$\{segment}
 
-        - id: qq_route
-          uri: https://www.qq.com
+        #路由产品相关的
+        - id: thirdparty_route
+          uri: lb://gulimall-third-party
           predicates:
-            - Query=url,qq
+            - Path=/api/third/party/**
+          filters:
+            - RewritePath=/api/third/party/?(?<segment>.*),/$\{segment}
+
+        #路由用户相关的
+        - id: member_route
+          uri: lb://gulimall-member
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*),/$\{segment}
+
+
 
         - id: admin_route
           uri: lb://renren-fast

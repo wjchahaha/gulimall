@@ -21,7 +21,7 @@ import java.util.Map;
 * @create: 2021-08-26 23:01
 **/
 @Slf4j
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GulimallExceptionControllerAdvice {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
