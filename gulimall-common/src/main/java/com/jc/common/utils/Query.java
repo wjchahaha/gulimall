@@ -64,7 +64,6 @@ public class Query<T> {
         if(StringUtils.isBlank(defaultOrderField)){
             return page;
         }
-
         //默认排序
         if(isAsc) {
             page.addOrder(OrderItem.asc(defaultOrderField));

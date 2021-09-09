@@ -1,7 +1,7 @@
 /**
   * Copyright 2021 json.cn 
   */
-package com.jc.gulimall.product.vo;
+package com.jc.common.to;
 
 import lombok.Data;
 
@@ -14,9 +14,10 @@ import java.math.BigDecimal;
  * @website http://www.json.cn/java2pojo/
  */
 @Data
-public class Bounds {
+public class MemberPrice {
 
-    private BigDecimal buyBounds;
-    private BigDecimal growBounds;
+    private Long id;
+    private String name;
+    private BigDecimal price;
 
 }

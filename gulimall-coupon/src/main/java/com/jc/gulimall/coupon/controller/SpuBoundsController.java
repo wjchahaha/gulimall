@@ -3,6 +3,8 @@ package com.jc.gulimall.coupon.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.jc.common.to.SpuBoundsTo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,9 +57,10 @@ public class SpuBoundsController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody SpuBoundsEntity spuBounds){
-		spuBoundsService.save(spuBounds);
-
+    public R save(@RequestBody SpuBoundsTo to){
+        SpuBoundsEntity boundsEntity = new SpuBoundsEntity();
+        BeanUtils.copyProperties(to,boundsEntity);
+		spuBoundsService.save(boundsEntity);
         return R.ok();
     }
 

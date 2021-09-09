@@ -9,4 +9,6 @@ public interface CouponFeignService {
 
     @RequestMapping("/coupon/coupon/member/list")
     public R memberCoupons();
+
+
 }

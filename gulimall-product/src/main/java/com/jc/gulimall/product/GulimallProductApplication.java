@@ -1,8 +1,10 @@
 package com.jc.gulimall.product;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 1.整合mybatis-plus
@@ -44,7 +46,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *       3)将他们关联起来
  *   5 )统一的异常处理
  */
+@EnableFeignClients(basePackages = "com.jc.gulimall.product.feign")
 @EnableDiscoveryClient
+@MapperScan("com.jc.gulimall.product.dao")
 @SpringBootApplication
 public class GulimallProductApplication {
 
