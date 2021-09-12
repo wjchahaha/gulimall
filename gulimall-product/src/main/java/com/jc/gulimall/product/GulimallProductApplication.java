@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 1.整合mybatis-plus
@@ -46,6 +47,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *       3)将他们关联起来
  *   5 )统一的异常处理
  */
+@EnableTransactionManagement
 @EnableFeignClients(basePackages = "com.jc.gulimall.product.feign")
 @EnableDiscoveryClient
 @MapperScan("com.jc.gulimall.product.dao")

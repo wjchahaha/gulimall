@@ -1,14 +1,13 @@
 package com.jc.gulimall.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.jc.gulimall.ware.vo.DoneVo;
+import com.jc.gulimall.ware.vo.MegroVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.jc.gulimall.ware.entity.PurchaseEntity;
 import com.jc.gulimall.ware.service.PurchaseService;
@@ -30,6 +29,54 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    /**
+     * {
+     *    id: 123,//采购单id
+     *    items: [{itemId:1,status:4,reason:""}]//完成/失败的需求详情
+     * }
+     * @param ids
+     * @return
+     */
+    @PostMapping("/done")
+    public R done(@RequestBody DoneVo vo){
+        purchaseService.done(vo);
+
+        purchaseService.doneSuccess(vo);
+
+        return R.ok();
+    }
+    /**
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/received")
+    public R received(@RequestBody  List<Long> ids){
+        purchaseService.received(ids);
+
+        return R.ok();
+    }
+    /**
+     * ware/purchase/merge
+     * {
+     *   purchaseId: 1, //整单id
+     *   items:[1,2,3,4] //合并项集合
+     * }
+     * @return
+     */
+    @PostMapping("/merge")
+    public R merge(@RequestBody MegroVo vo){
+        purchaseService.merge(vo);
+
+        return R.ok();
+    }
+    ///ware/purchase/unreceive/list
+    @RequestMapping("/unreceive/list")
+    public R unreceiveList(@RequestParam Map<String, Object> params){
+        PageUtils page = purchaseService.queryPageUnreceiveList(params);
+
+        return R.ok().put("page", page);
+    }
     /**
      * 列表
      */
