@@ -3,6 +3,7 @@ package com.jc.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jc.common.utils.PageUtils;
 import com.jc.gulimall.product.entity.AttrEntity;
+import com.jc.gulimall.product.entity.ProductAttrValueEntity;
 import com.jc.gulimall.product.vo.AttrRespVo;
 import com.jc.gulimall.product.vo.AttrVo;
 
@@ -31,6 +32,9 @@ public interface AttrService extends IService<AttrEntity> {
     PageUtils getOtherAttr(Map<String, Object> params, Long attrgroupId);
 
     PageUtils getOtherAttr2(Map<String, Object> params, Long attrgroupId);
+
+    void updateBySpuId(Long spuId, List<ProductAttrValueEntity> entities);
+
 
 //    PageUtils querySalePage(Map<String, Object> params, Long catelogId);
 }

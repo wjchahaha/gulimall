@@ -41,6 +41,9 @@ public class SpuInfoController {
 
         return R.ok().put("page", page);
     }
+    /**
+     * /product/attr/base/listforspu/{spuId}
+     */
 
 
     /**

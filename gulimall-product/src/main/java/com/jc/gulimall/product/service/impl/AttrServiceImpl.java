@@ -6,10 +6,9 @@ import com.jc.common.constant.ProductAttrTypeEnum;
 import com.jc.gulimall.product.dao.AttrAttrgroupRelationDao;
 import com.jc.gulimall.product.dao.AttrGroupDao;
 import com.jc.gulimall.product.dao.CategoryDao;
-import com.jc.gulimall.product.entity.AttrAttrgroupRelationEntity;
-import com.jc.gulimall.product.entity.AttrGroupEntity;
-import com.jc.gulimall.product.entity.CategoryEntity;
+import com.jc.gulimall.product.entity.*;
 import com.jc.gulimall.product.service.CategoryService;
+import com.jc.gulimall.product.service.ProductAttrValueService;
 import com.jc.gulimall.product.vo.AttrRespVo;
 import com.jc.gulimall.product.vo.AttrVo;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +27,6 @@ import com.jc.common.utils.PageUtils;
 import com.jc.common.utils.Query;
 
 import com.jc.gulimall.product.dao.AttrDao;
-import com.jc.gulimall.product.entity.AttrEntity;
 import com.jc.gulimall.product.service.AttrService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -40,6 +38,8 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Autowired
     private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
 
+    @Autowired
+    private ProductAttrValueService productAttrValueService;
     @Autowired
     private CategoryDao categoryDao;
 
@@ -283,6 +283,29 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         IPage<AttrEntity> attr_id1 = this.page(new Query<AttrEntity>().getPage(params), wrapper.in("attr_id", attr_id));
 
         return new PageUtils(attr_id1);
+    }
+
+    @Override
+    public void updateBySpuId(Long spuId, List<ProductAttrValueEntity> entities) {
+
+
+        List<ProductAttrValueEntity> collect = entities.stream().map(a -> {
+            ProductAttrValueEntity one = productAttrValueService.getOne(
+                    new QueryWrapper<ProductAttrValueEntity>()
+                            .eq("spu_id", spuId).eq("attr_id", a.getAttrId()));
+
+            if (one != null){
+                one.setAttrValue(a.getAttrValue());
+                one.setQuickShow(a.getQuickShow());
+            }
+
+            return one;
+        }).collect(Collectors.toList());
+
+        productAttrValueService.updateBatchById(collect);
+
+        //直接将spu对应的属性全部进行删除 然后在进行批量插入
+
     }
 
 
