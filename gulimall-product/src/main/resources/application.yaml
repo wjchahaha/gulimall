@@ -25,3 +25,9 @@ server:
 logging:
   level:
     com.jc.gulimall: debug
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 600000

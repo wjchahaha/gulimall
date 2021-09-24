@@ -35,7 +35,22 @@ import java.util.Map;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class GulimallSearchApplicationTests {
-
+    /**
+     * 把商品数据从数据库中导入到es中叫做上架
+     * （1）.方便检索{
+     *     skuid:1
+     *     spuId:11
+     *     skutitle:Apple 13
+     *     price:998
+     *     saleCount:99
+     *     attrs:[
+     *      {屏幕尺寸：5寸},
+     *      {CPU:高通886},
+     *      {分辨率：全高清}
+     *
+     *     ]
+     * }
+     */
     @Autowired
     private RestHighLevelClient restHighLevelClient;
 
@@ -120,7 +135,6 @@ public class GulimallSearchApplicationTests {
         //获取余额平均值的聚合
         Avg balanceAvg = aggregations.get("balanceAvg");
         System.out.println("获取余额平均值"+balanceAvg.getValue());
-
 
     }
 

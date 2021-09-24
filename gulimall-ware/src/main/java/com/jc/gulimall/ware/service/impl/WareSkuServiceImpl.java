@@ -3,11 +3,15 @@ package com.jc.gulimall.ware.service.impl;
 import com.jc.common.utils.R;
 import com.jc.gulimall.ware.entity.WareInfoEntity;
 import com.jc.gulimall.ware.feign.ProductFeignService;
+import com.jc.gulimall.ware.vo.SkuHasStockVo;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -81,6 +85,24 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             wareSkuDao.addStack(skuId, wareId, skuNum);
         }
 
+    }
+
+    @Override
+    public List<SkuHasStockVo> hasStock(List<Long> skuIds) {
+
+        List<SkuHasStockVo> collect = skuIds.stream().map(skuId -> {
+            SkuHasStockVo vo = new SkuHasStockVo();
+            //循环查表
+            Long stock=baseMapper.getSkuWare(skuId);
+            vo.setSkuId(skuId);
+            //如果sku库存表中没有的话  则stoack为这里会出现空指针异常
+            vo.setHasStock(stock == null? false:stock > 0);
+
+            return vo;
+        }).collect(Collectors.toList());
+
+
+        return collect;
     }
 
 }

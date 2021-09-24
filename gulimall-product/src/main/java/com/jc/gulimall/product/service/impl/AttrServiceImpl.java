@@ -308,5 +308,30 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
     }
 
+    @Override
+    public List<AttrEntity> selectSearchAttrs(List<Long> collect1) {
+        List<AttrEntity> attrEntities = this.listByIds(collect1);
+
+        List<AttrEntity> collect = attrEntities.stream().filter(attrEntity -> {
+            return attrEntity.getSearchType() == 1;
+        }).collect(Collectors.toList());
+
+        return collect;
+    }
+
+    @Override
+    public List<Long> selectSearchAttrsIds(List<Long> attrids) {
+        List<AttrEntity> attrEntities = this.listByIds(attrids);
+
+        List<Long> collect = attrEntities.stream().filter(item -> {
+            return item.getSearchType() == 1;
+        }).map(attr -> {
+            return attr.getAttrId();
+        }).collect(Collectors.toList());
+
+
+        return collect;
+    }
+
 
 }

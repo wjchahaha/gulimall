@@ -1,6 +1,7 @@
 package com.jc.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jc.common.to.SkuEsModel;
 import com.jc.common.utils.PageUtils;
 import com.jc.gulimall.product.entity.ProductAttrValueEntity;
 import com.jc.gulimall.product.vo.BaseAttrs;
@@ -22,5 +23,8 @@ public interface ProductAttrValueService extends IService<ProductAttrValueEntity
     void saveBaseAttrs(Long id, List<BaseAttrs> baseAttrs);
 
     List<ProductAttrValueEntity> listforspu(Long spuId);
+
+
+    List<ProductAttrValueEntity> baseAttrBySpuId(Long spuId);
 }
 

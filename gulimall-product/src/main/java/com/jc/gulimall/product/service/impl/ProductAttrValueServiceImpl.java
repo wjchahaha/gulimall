@@ -1,7 +1,9 @@
 package com.jc.gulimall.product.service.impl;
 
+import com.jc.common.to.SkuEsModel;
 import com.jc.gulimall.product.entity.AttrEntity;
 import com.jc.gulimall.product.service.AttrService;
+import com.jc.gulimall.product.vo.Attr;
 import com.jc.gulimall.product.vo.BaseAttrs;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +66,13 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
 
         return list;
     }
+
+    @Override
+    public List<ProductAttrValueEntity> baseAttrBySpuId(Long spuId) {
+        List<ProductAttrValueEntity> attrValueEntities = this.list(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+
+        return attrValueEntities;
+    }
+
 
 }
