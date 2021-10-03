@@ -1,16 +1,10 @@
 package com.jc.gulimall.product.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.jc.gulimall.product.dao.BrandDao;
-import com.jc.gulimall.product.dao.CategoryBrandRelationDao;
-import com.jc.gulimall.product.entity.BrandEntity;
-import com.jc.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.jc.gulimall.product.service.CategoryBrandRelationService;
+import com.jc.gulimall.product.vo.Catelog2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -99,6 +93,85 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //级联更新
         categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
 
+    }
+
+    @Override
+    public List<CategoryEntity> getOneLevelCategory() {
+//        QueryWrapper<CategoryEntity> cat_level = new QueryWrapper<CategoryEntity>().eq("cat_level", 1);
+//
+//        List<CategoryEntity> list = this.list(cat_level);
+
+        QueryWrapper<CategoryEntity> parent_cid = new QueryWrapper<CategoryEntity>().eq("parent_cid", 0);
+
+        List<CategoryEntity> list = this.list(parent_cid);
+
+
+        return list;
+    }
+
+    @Override
+    public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        //获取所有的分类
+        List<CategoryEntity> all = this.list();
+        //获取所有一级分类
+
+        List<CategoryEntity> oneLevelCategory = getCatalogEntityByParentId(all,0L);
+
+        Map<String, List<Catelog2Vo>> res = oneLevelCategory.stream().collect(Collectors.toMap(
+                k -> {
+                    return k.getCatId().toString();
+                },
+                v -> {
+//                    QueryWrapper<CategoryEntity> list2Wrapper = new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId());
+//                    List<CategoryEntity> level2Catalogys = this.list(list2Wrapper);
+                    //优化：在所有的分类中parent_id是它的
+                    //查出所有二级分类
+                    List<CategoryEntity> level2Catalogys = getCatalogEntityByParentId(all, v.getCatId());
+
+                    List<Catelog2Vo> catelog2VoList = null;
+                    //并进行封装
+                    if (level2Catalogys != null){
+                        catelog2VoList = level2Catalogys.stream().map(l2 -> {
+                            Catelog2Vo catelog2Vo = new Catelog2Vo();
+                            catelog2Vo.setCatalog1Id(l2.getParentCid().toString());
+                            catelog2Vo.setId(l2.getCatId().toString());
+                            catelog2Vo.setName(l2.getName());
+                            //查出三级分类
+//                            List<CategoryEntity> level3Catelogys = this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                            List<CategoryEntity> level3Catelogys = getCatalogEntityByParentId(all, l2.getCatId());
+                            //封装好了
+                            if (level3Catelogys != null){
+                                List<Catelog2Vo.Catelog3Vo> collect = level3Catelogys.stream().map(l3 -> {
+                                    Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo();
+                                    catelog3Vo.setCatalog2Id(l3.getParentCid().toString());
+                                    catelog3Vo.setId(l3.getCatId().toString());
+                                    catelog3Vo.setName(l3.getName());
+
+                                    return catelog3Vo;
+                                }).collect(Collectors.toList());
+                                catelog2Vo.setCatalog3List(collect);
+                            }
+                            return catelog2Vo;
+                        }).collect(Collectors.toList());
+
+                    }
+                    return catelog2VoList;
+                }));
+                return res;
+    }
+
+    /**
+     * all 所有分类
+     * parent_id 父id
+     * @param allCategory
+     * @param parent_id
+     * @return
+     */
+    public List<CategoryEntity> getCatalogEntityByParentId(List<CategoryEntity> allCategory,Long parent_id){
+        List<CategoryEntity> collect = allCategory.stream().filter(item -> {
+            return item.getParentCid() == parent_id;
+        }).collect(Collectors.toList());
+        return collect;
     }
 
     //225->225.P->225.P.P

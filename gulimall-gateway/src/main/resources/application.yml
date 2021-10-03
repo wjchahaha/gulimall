@@ -11,7 +11,7 @@ spring:
         - id: product_route
           uri: lb://gulimall-product
           predicates:
-            - Path=/api/product/**
+            - Path=/api/product/**,/hello
           filters:
             - RewritePath=/api/?(?<segment>.*),/$\{segment}
 
@@ -46,5 +46,12 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/?(?<segment>.*),/renren-fast/$\{segment}
+
+
+        - id: gulimall.com_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=**.gulimall.com
+
 
 #localhost:88/api/captcha.jpg ->localhost:8080/renren-fast/captcha.jpg

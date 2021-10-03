@@ -46,6 +46,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *       2）编写一个自定义的校验器
  *       3)将他们关联起来
  *   5 )统一的异常处理
+ *
+ *
+ *   模板引擎：
+ *   1.引入thymeleaf
+ *   2.配置thymeleaf缓存关闭
+ *   3.将静态文件放到static下
+ *   4.html放到templates
+ *   5.使用spring-boot-devtools 不重启服务器更新路修改页面
+     *   5.1)引入dev-tools
+ *      5.2)修改完页面ctrl+shirt+f9
  */
 @EnableTransactionManagement
 @EnableFeignClients(basePackages = "com.jc.gulimall.product.feign")

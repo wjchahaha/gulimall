@@ -10,6 +10,8 @@ spring:
         server-addr: 127.0.0.1:8848
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: true
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -19,15 +21,15 @@ mybatis-plus:
       logic-delete-field: showStatus
       logic-delete-value: 0
       logic-not-delete-value: 1
-server:
-  port: 10000
 
-logging:
-  level:
-    com.jc.gulimall: debug
-feign:
-  client:
-    config:
+server:
+      port: 10000
+      logging:
+        level:
+          com.jc.gulimall: error
+      feign:
+        client:
+          config:
       default:
         connectTimeout: 10000
         readTimeout: 600000
