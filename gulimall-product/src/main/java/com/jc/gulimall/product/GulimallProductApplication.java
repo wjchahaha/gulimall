@@ -56,6 +56,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *   5.使用spring-boot-devtools 不重启服务器更新路修改页面
      *   5.1)引入dev-tools
  *      5.2)修改完页面ctrl+shirt+f9
+ *
+ *   6.整合redis
+ *      6.1)引入场景启动器 starter
+ *      6.2)配置redis的host，port等信息
+ *      6.3)使用boot自动配置好的 StringRedisTemplate
+ *
  */
 @EnableTransactionManagement
 @EnableFeignClients(basePackages = "com.jc.gulimall.product.feign")

@@ -8,11 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.UUID;
 
 /**
  * 1.引入oos-starter
@@ -30,10 +33,22 @@ class GulimallProductApplicationTests {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
+    @Test
+    public void testStringRedisTemplate(){
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        ops.set("hello","world"+ UUID.randomUUID().toString());
+
+        String hello = ops.get("hello");
+
+        System.out.println("从缓存中拿到的数据:"+hello);
+    }
+
     @Test
     public void testFindPath(){
         Long[] catelogPath = categoryService.findCatelogPath(225L);
-
         log.info("完整路径:{}", Arrays.asList(catelogPath));
     }
 
