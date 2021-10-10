@@ -61,6 +61,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *      6.1)引入场景启动器 starter
  *      6.2)配置redis的host，port等信息
  *      6.3)使用boot自动配置好的 StringRedisTemplate
+ *   7.整合redisson
+ *      7.1)引入redisson依赖
+ *      7.2)配置
  *
  */
 @EnableTransactionManagement

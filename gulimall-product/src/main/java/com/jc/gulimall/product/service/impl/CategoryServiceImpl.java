@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.jc.gulimall.product.service.CategoryBrandRelationService;
 import com.jc.gulimall.product.vo.Catelog2Vo;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -36,6 +38,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     @Autowired
     private CategoryDao categoryDao;
 
+    @Autowired
+    private RedissonClient redisson;
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
 
@@ -132,7 +136,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         String catalogJSON = cache.opsForValue().get("catalogJSON");
         //没有的话从缓存中查 并且放入到缓存中
         if (StringUtils.isEmpty(catalogJSON)) {
-            Map<String, List<Catelog2Vo>> catalogJsonFromDB = getCatalogJsonFromDbWithRedisLock();
+            Map<String, List<Catelog2Vo>> catalogJsonFromDB = getCatalogJsonFromDbWithRedissonLock();
             return catalogJsonFromDB;
         } else {
             System.out.println("命中缓存....直接返回...");
@@ -143,6 +147,29 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
             return result;
         }
+    }
+
+    /**
+     * 缓存里面的数据如何和数据库保持一致
+     * 1.
+     * 2.
+     * @return
+     */
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedissonLock() {
+
+        RLock lock = redisson.getLock("CatalogJson-lock");
+        //锁住
+        lock.lock();
+        System.out.println("获取分布式锁成功......");
+
+        Map<String, List<Catelog2Vo>> catalogJsonFromDb;
+        try {
+            catalogJsonFromDb = getCatalogJsonFromDb();
+        } finally {//执行完了进行原子删锁
+            lock.unlock();
+        }
+        return catalogJsonFromDb;
+
     }
 
     public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedisLock() {
@@ -172,7 +199,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
             return catalogJsonFromDb;
         } else {
-
             //没拿到锁则一直尝试拿 （自旋）
             System.out.println("获取分布式锁失败....正在等待重试..........");
             try {
@@ -192,6 +218,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         //如果不空的话直接返回
         if (!StringUtils.isEmpty(catalogJSON)) {
+            System.out.println("贡献线程中一个......");
             //有的话查出来反序列化然后返回
             Map<String, List<Catelog2Vo>> result = JSON.
                     parseObject(catalogJSON, new TypeReference<Map<String, List<Catelog2Vo>>>() {
