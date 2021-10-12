@@ -34,6 +34,7 @@ class GulimallProductApplicationTests {
     @Autowired
     CategoryService categoryService;
 
+
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
@@ -42,15 +43,14 @@ class GulimallProductApplicationTests {
 
     @Test
     public void testRedisson(){
-        System.out.println(redissonClient);
+        String s = stringRedisTemplate.opsForValue().get("category::getOneLevelCategory");
+        System.out.println(s);
     }
     @Test
     public void testStringRedisTemplate(){
         ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
         ops.set("hello","world"+ UUID.randomUUID().toString());
-
         String hello = ops.get("hello");
-
         System.out.println("从缓存中拿到的数据:"+hello);
     }
 

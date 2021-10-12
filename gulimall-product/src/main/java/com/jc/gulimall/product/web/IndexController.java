@@ -46,6 +46,7 @@ public class IndexController {
         System.out.println("123");
         return "成功返回123";
     }
+
     @GetMapping({"/", "/index.html"})
     public String indexPage(Model model) {
 

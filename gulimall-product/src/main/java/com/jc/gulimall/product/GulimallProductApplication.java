@@ -3,6 +3,7 @@ package com.jc.gulimall.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -65,7 +66,20 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *      7.1)引入redisson依赖
  *      7.2)配置
  *
+ *   8.整合spring.cache
+ *      8.1)引入spring.boot.starter.redis
+ *      8.2)spring.cache.type= redis
+ *      8.3)@EnableCaching
+ *      8.4)方法上加注解
+ *      @Cacheable: Triggers cache population.  把结果放入缓存  (出发缓存入口)
+ *      @CacheEvict: Triggers cache eviction.  删除缓存
+        @CachePut: Updates the cache without interfering with the method execution. 修改缓存在不影响方法执行的情况下
+        @Caching: Regroups multiple cache operations to be applied on a method. 重新组合要应用于方法上的多个缓存操作
+        @CacheConfig: Shares some common cache-related settings at class-level. 在类级别共享一些公共缓存相关设置
+ *
+ *
  */
+@EnableCaching
 @EnableTransactionManagement
 @EnableFeignClients(basePackages = "com.jc.gulimall.product.feign")
 @EnableDiscoveryClient

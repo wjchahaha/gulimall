@@ -8,6 +8,9 @@ import com.jc.gulimall.product.vo.Catelog2Vo;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -100,6 +103,26 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return (Long[]) parentPath.toArray(new Long[parentPath.size()]);
     }
 
+    /**
+     * 缓存一致性问题解决：
+     * 1.失效模式
+     * @CacheEvict(value = "category",key = "'getOneLevelCategory'")
+     * 把category分区key为getOneLevelCategory的缓存删除掉
+     * @Caching:里边可以放多个@CacheEvict,清除掉多个缓存
+     *
+     * @CacheEvict(value = "category",allEntries = true)
+     * 删除掉category分区的所有缓存
+     * 2.双写模式
+     * @CachePut:某个方法修改的数据（返回）的还是我们的最新数据那我们就把他给缓存中再放一份
+     *
+     * @param category
+     */
+//    @Caching(evict = {
+//            @CacheEvict(value = "category",key = "'getOneLevelCategory'"),
+//            @CacheEvict(value = "category",key = "'getCatalogJson'"),
+//    }
+//    )
+    @CacheEvict(value = "category",allEntries = true)
     @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
@@ -110,12 +133,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     }
 
+    /***
+     * 如果缓存中有则不执行方法 如果没有的话把他方法命名空间为category的缓存中
+     *
+     * 缓存中的key：category::SimpleKey []
+     * value:是序列化后数据
+     *
+     * key,ttl,数据格式都是spring.cache来帮我们指定的
+     * 我们可以自定义
+     *
+     */
+    @Cacheable(value = "category",key = "#root.method.name")
     @Override
     public List<CategoryEntity> getOneLevelCategory() {
 //        QueryWrapper<CategoryEntity> cat_level = new QueryWrapper<CategoryEntity>().eq("cat_level", 1);
-//
 //        List<CategoryEntity> list = this.list(cat_level);
-
+        System.out.println("getOneLevelCategory方法返回的一级数据被放入缓存");
         QueryWrapper<CategoryEntity> parent_cid = new QueryWrapper<CategoryEntity>().eq("parent_cid", 0);
 
         List<CategoryEntity> list = this.list(parent_cid);
@@ -124,8 +157,63 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return list;
     }
 
+
+    @Cacheable(value = "category",key = "#root.methodName")
     @Override
-    public Map<String, List<Catelog2Vo>> getCatalogJson() {
+    public Map<String, List<Catelog2Vo>> getCatalogJson (){
+        System.out.println("去数据库中查........并且getCatalogJson方法返回的数据被放入缓存");
+
+        //获取所有的分类
+        List<CategoryEntity> all = this.list();
+        //获取所有一级分类
+        List<CategoryEntity> oneLevelCategory = getCatalogEntityByParentId(all, 0L);
+
+        Map<String, List<Catelog2Vo>> res = oneLevelCategory.stream().collect(Collectors.toMap(
+                k -> {
+                    return k.getCatId().toString();
+                },
+                v -> {
+//                    QueryWrapper<CategoryEntity> list2Wrapper = new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId());
+//                    List<CategoryEntity> level2Catalogys = this.list(list2Wrapper);
+                    //优化：在所有的分类中parent_id是它的
+                    //查出所有二级分类
+                    List<CategoryEntity> level2Catalogys = getCatalogEntityByParentId(all, v.getCatId());
+
+                    List<Catelog2Vo> catelog2VoList = null;
+                    //并进行封装
+                    if (level2Catalogys != null) {
+                        catelog2VoList = level2Catalogys.stream().map(l2 -> {
+                            Catelog2Vo catelog2Vo = new Catelog2Vo();
+                            catelog2Vo.setCatalog1Id(l2.getParentCid().toString());
+                            catelog2Vo.setId(l2.getCatId().toString());
+                            catelog2Vo.setName(l2.getName());
+                            //查出三级分类
+//                            List<CategoryEntity> level3Catelogys = this.list(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                            List<CategoryEntity> level3Catelogys = getCatalogEntityByParentId(all, l2.getCatId());
+                            //封装好了
+                            if (level3Catelogys != null) {
+                                List<Catelog2Vo.Catelog3Vo> collect = level3Catelogys.stream().map(l3 -> {
+                                    Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo();
+                                    catelog3Vo.setCatalog2Id(l3.getParentCid().toString());
+                                    catelog3Vo.setId(l3.getCatId().toString());
+                                    catelog3Vo.setName(l3.getName());
+
+                                    return catelog3Vo;
+                                }).collect(Collectors.toList());
+                                catelog2Vo.setCatalog3List(collect);
+                            }
+                            return catelog2Vo;
+                        }).collect(Collectors.toList());
+
+                    }
+
+                    return catelog2VoList;
+                }));
+
+        return res;
+    }
+    //实现分布式锁的方法：并没有实现缓存一致性
+    public Map<String, List<Catelog2Vo>> getCatalogJson2() {
         /**
          * 要想完美使用缓存
          * 1.null值进行缓存：解决缓存穿透
@@ -144,7 +232,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             Map<String, List<Catelog2Vo>> result = JSON.
                     parseObject(catalogJSON, new TypeReference<Map<String, List<Catelog2Vo>>>() {
                     });
-
             return result;
         }
     }
