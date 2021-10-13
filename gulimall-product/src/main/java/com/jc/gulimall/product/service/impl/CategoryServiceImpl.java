@@ -143,7 +143,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * 我们可以自定义
      *
      */
-    @Cacheable(value = "category",key = "#root.method.name")
+    @Cacheable(value = "category",key = "#root.method.name",sync = true)
     @Override
     public List<CategoryEntity> getOneLevelCategory() {
 //        QueryWrapper<CategoryEntity> cat_level = new QueryWrapper<CategoryEntity>().eq("cat_level", 1);
@@ -158,7 +158,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
 
-    @Cacheable(value = "category",key = "#root.methodName")
+    @Cacheable(value = "category",key = "#root.methodName",sync = true)
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson (){
         System.out.println("去数据库中查........并且getCatalogJson方法返回的数据被放入缓存");

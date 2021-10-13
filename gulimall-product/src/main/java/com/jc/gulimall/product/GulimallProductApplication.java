@@ -76,7 +76,19 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         @CachePut: Updates the cache without interfering with the method execution. 修改缓存在不影响方法执行的情况下
         @Caching: Regroups multiple cache operations to be applied on a method. 重新组合要应用于方法上的多个缓存操作
         @CacheConfig: Shares some common cache-related settings at class-level. 在类级别共享一些公共缓存相关设置
- *
+ *  9.spring.cache不足
+ *      读模式:
+ *          缓存击穿：大量并发一直请求一个不存的数据。解决:缓存一个null值：spring.cache.redis.cache-null-values=true
+ *          缓存穿透：高并发请求那个数据，数据刚好过期，全部落到db。解决：加锁，springCache锁的粒度是当前服务，也没多大关系。
+ *                    只有get(俩参数)哪个方法加锁了,锁的粒度是当前服务
+         *            只有Cacheable能加锁
+         *            public synchronized <T> T get(Object key, Callable<T> valueLoader)
+ *          缓存雪崩：大量数据同时过期。解决：家随机时间。加过期时间。
+         *          一般不会出现这个问题，因为缓存的时候时间节点就不同，所以这个被忽略了。
+ *      写模式:
+ *      1）读写加锁：
+ *      2）引入Cancle,监控数据库，如果db有更新则缓存
+ *      3）读多写多：直接去数据库
  *
  */
 @EnableCaching
