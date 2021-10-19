@@ -7,11 +7,16 @@ gulimall（谷粒商城） 项目是一套电商项目，包括前台商城系�
 
 # 项目演示
 ## 前台部分
+![image](https://user-images.githubusercontent.com/76938084/137830559-f1fd13ba-e6e9-477e-ac81-47f515af8487.png)
+
+![image](https://user-images.githubusercontent.com/76938084/137830536-c34cc634-ca7b-4fa7-a4a5-874777badd34.png)
+
 
 ## 后台管理系统
 
 
 # 项目结构
+````
 gulimall
 ├── gulimall-common -- 工具类及通用代码
 ├── renren-generator -- 人人开源项目的代码生成器
@@ -26,6 +31,7 @@ gulimall
 ├── gulimall-third-party -- 第三方服务
 ├── gulimall-ware -- 仓储服务
 └── gulimall-member -- 会员服务
+````
 
 # 技术选型
 SpringBoot+SpringCloud+SpringCloudAlibaba+MyBatis-Plus+Elasticsearch+Redisson+Docker+OSS;
