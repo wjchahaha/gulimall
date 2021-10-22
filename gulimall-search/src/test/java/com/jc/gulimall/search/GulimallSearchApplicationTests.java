@@ -31,6 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -58,28 +59,28 @@ public class GulimallSearchApplicationTests {
     @Autowired
     private ElasticSearch elasticSearch;
 
-    /**
-     * 测试复杂检索
-     * @throws IOException
-     */
-    @ToString
-    @Data
-     static class Account{
-        private int account_number;
+        /**
+         * 测试复杂检索
+         * @throws IOException
+         */
+        @ToString
+        @Data
+        static class Account{
+            private int account_number;
 
-        private int balance;
+            private int balance;
 
-        private String firstname;
+            private String firstname;
 
-        private String lastname;
+            private String lastname;
 
-        private int age;
+            private int age;
 
-        private String gender;
+            private String gender;
 
-        private String address;
+            private String address;
 
-        private String employer;
+            private String employer;
 
         private String email;
 
@@ -87,6 +88,14 @@ public class GulimallSearchApplicationTests {
 
         private String state;
     }
+
+
+
+    @Autowired
+    public static ExecutorService executor = Executors.newFixedThreadPool(10);
+
+
+
     @Test
     public void searchData() throws IOException {
         //1.通过searchRequest来进行检索
