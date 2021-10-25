@@ -21,22 +21,22 @@ import java.util.List;
 public class SearchParam {
     //catalog3Id
     //keyword
-    private String keyword;
-    private Long catalog3Id;
+    private String keyword;//1 skutitle
+    private Long catalog3Id;// 1
 
     //品牌id,价格区间(),attrs,sort,pageNum,hastStock
 
-    private List<Long> brandId;
+    private List<Long> brandId; //1
 
-    private String skuPrice;
+    private String skuPrice; //1
 
-    private List<String> attrs;
+    private List<String> attrs;//1
 
-    private String sort;
+    private String sort;//1
 
-    private Integer pageNum;
+    private Integer pageNum = 1;
 
-    private Integer hashStock;
+    private Integer hashStock =1;//1
 
 
 }

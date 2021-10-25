@@ -16,6 +16,12 @@ import java.util.List;
 **/
 @Data
 public class SearchRespVo {
+    /**
+     * 分页信息
+     */
+    private Integer pageNum;
+    private Long total;
+    private Integer totalPages;
     //所有的商品模型
     private List<SkuEsModel> products;
 

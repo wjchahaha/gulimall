@@ -48,7 +48,6 @@ public class GulimallSearchApplicationTests {
      *      {屏幕尺寸：5寸},
      *      {CPU:高通886},
      *      {分辨率：全高清}
-     *
      *     ]
      * }
      */

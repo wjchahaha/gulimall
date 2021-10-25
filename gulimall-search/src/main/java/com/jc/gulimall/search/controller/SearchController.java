@@ -26,7 +26,7 @@ public class SearchController {
     private SearchService searchService;
 
     @RequestMapping("/list.html")
-    public String list(@RequestParam SearchParam vo, Model model){
+    public String list(SearchParam vo, Model model){
         //去es中查返回页面需要的所有信息
        SearchRespVo res= searchService.search(vo);
        //放到Model中,
