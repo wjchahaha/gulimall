@@ -11,6 +11,7 @@ import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -65,16 +66,16 @@ public class SearchServiceImpl implements SearchService {
 
         //1.1构建检索条件
         //1.1.1 构建检索条件中的query条件
-
+        SearchResult result = null;
         try {
             //2.执行检索请求
             SearchResponse response = restHighLevelClient.search(searchRequest, ElasticSearch.COMMON_OPTIONS);
-            SearchResult result = buildSearchResult(response,vo);
+            result = buildSearchResult(response,vo);
         } catch (IOException e) {
             e.printStackTrace();
         }
         //通过返回的resp进行聚合
-        return null;
+        return result;
     }
 
     /**
@@ -194,6 +195,7 @@ public class SearchServiceImpl implements SearchService {
         attr_agg.subAggregation(attr_id_agg);
         builder.aggregation(attr_agg);
         SearchRequest searchRequest = new SearchRequest(ElasticSearchConstant.PRODUCT_INDEX);
+        //是否有序
 
         //都拿来进行拼装
         String dsl = builder.toString();
@@ -218,7 +220,11 @@ public class SearchServiceImpl implements SearchService {
                 String source = product.getSourceAsString();
                 //转成对象
                 SkuEsModel skuEsModel = JSON.parseObject(source, SkuEsModel.class);
-                skuEsModelList.add(skuEsModel);
+//                if (!StringUtils.isEmpty(searchParam.getKeyword())){
+//                    String skuTitle = product.getHighlightFields().get("skuTitle").getFragments()[0].string();
+//                    skuEsModel.setSkuTitle(skuTitle);
+//                }
+//                skuEsModelList.add(skuEsModel);
             }
             searchResult.setProducts(skuEsModelList);
         }
@@ -301,7 +307,7 @@ public class SearchServiceImpl implements SearchService {
         searchResult.setTotal(total);
         searchResult.setTotalPages(totalPages);
         searchParam.setPageNum(searchParam.getPageNum());
-        return null;
+        return searchResult;
     }
 
 
