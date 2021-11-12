@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
+
 import lombok.Data;
 
 /**
@@ -60,5 +62,25 @@ public class AttrEntity implements Serializable {
 	private Integer valueType;
 
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		AttrEntity that = (AttrEntity) o;
+		return Objects.equals(attrId, that.attrId) &&
+				Objects.equals(attrName, that.attrName) &&
+				Objects.equals(searchType, that.searchType) &&
+				Objects.equals(icon, that.icon) &&
+				Objects.equals(valueSelect, that.valueSelect) &&
+				Objects.equals(attrType, that.attrType) &&
+				Objects.equals(enable, that.enable) &&
+				Objects.equals(catelogId, that.catelogId) &&
+				Objects.equals(showDesc, that.showDesc) &&
+				Objects.equals(valueType, that.valueType);
+	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(attrId, attrName, searchType, icon, valueSelect, attrType, enable, catelogId, showDesc, valueType);
+	}
 }

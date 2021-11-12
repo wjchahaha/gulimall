@@ -2,8 +2,12 @@ package com.jc.gulimall.product;
 
 
 import com.jc.gulimall.product.entity.BrandEntity;
+import com.jc.gulimall.product.service.AttrGroupService;
 import com.jc.gulimall.product.service.BrandService;
 import com.jc.gulimall.product.service.CategoryService;
+import com.jc.gulimall.product.service.SkuSaleAttrValueService;
+import com.jc.gulimall.product.vo.SkuItemSaleAttrVo;
+import com.jc.gulimall.product.vo.SpuItemAttrGroupAttrVo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RedissonClient;
@@ -13,9 +17,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,10 +47,35 @@ class GulimallProductApplicationTests {
     @Autowired
     RedissonClient redissonClient;
 
+    @Autowired
+    private AttrGroupService attrGroupService;
+
+    @Autowired
+    private SkuSaleAttrValueService skuSaleAttrValueService;
+    @Test
+    public void test11(){
+        List<SpuItemAttrGroupAttrVo> attrGroupBySpuId = attrGroupService.getAttrGroupBySpuId(3L, 225L);
+
+        System.out.println(attrGroupBySpuId);
+    }
+
+    @Test
+    public void testgetSkuSaleAttrBySpuId(){
+        List<SkuItemSaleAttrVo> skuSaleAttrBySpuId = skuSaleAttrValueService.getSkuSaleAttrBySpuId(3L);
+        System.out.println(skuSaleAttrBySpuId);
+    }
+
     @Test
     public void testRedisson(){
         String s = stringRedisTemplate.opsForValue().get("category::getOneLevelCategory");
         System.out.println(s);
+    }
+    @Autowired
+    private DataSource dataSource;
+
+    @Test
+    public void test31(){
+        System.out.println("使用的连接池是"+dataSource);
     }
     @Test
     public void testStringRedisTemplate(){
