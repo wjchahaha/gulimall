@@ -595,10 +595,18 @@
 							<div class="box-attr clear" th:each="attr:${item.saleAttr}">
 								<dl>
 									<dt>选择[[${attr.attrName}]]</dt>
-									<dd th:each="attrValue:${#strings.listSplit(attr.attrValues,',')}">
-										<a href="/static/item/#">
-											[[${attrValue}]]
+									<dd th:each="vals:${attr.attrValues}">
+<!--										#strings.listSplit(vals.skuIds,',')-->
+										<a class="sku_attr_value"
+										   th:attr="
+										   skus=${vals.skuIds},
+										   class=${#lists.contains(#strings.listSplit(vals.skuIds,','),item.info.skuId.toString())?'sku_attr_value checked':'sku_attr_value'}
+											">
+
+											[[${vals.attrValue}]]
+
 										</a>
+<!--										//因为当前商品是一个sku,然后所有属性值里边的skuid不同,判断哪一个属性值里边有当前skuId,则回显-->
 									</dd>
 
 								</dl>
@@ -1204,6 +1212,18 @@
 	<script src="/static/item/js/jquery1.9.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/item/js/js.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+	</script>
+	<script>
+		$(".sku_attr_value").click(function () {
+			  //1.获取到所有加了checked所有属性
+			  //3.取出他们的交集，得到skuId
+			  //4.跳转
+		});
+		// $(".sku_attr_value.checked").css({"border":"solid 1px red"});
+		$(function () {
+			$(".sku_attr_value").parent().css({"border":"solid 1px #CCC"});
+			$("a[class='sku_attr_value checked']").parent().css({"border":"solid 1px red"});
+		})
 	</script>
 
 </html>
