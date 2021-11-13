@@ -1215,9 +1215,28 @@
 	</script>
 	<script>
 		$(".sku_attr_value").click(function () {
-			  //1.获取到所有加了checked所有属性
-			  //3.取出他们的交集，得到skuId
-			  //4.跳转
+			  //1.点击的元素先添加上自定义的属性,为了识别该元素是我们刚刚点击过的
+			var skus = new Array();
+			$(this).parent().parent().find(".sku_attr_value").removeClass("checked");
+			$(this).addClass("checked");
+			var curr = $(this).attr("skus").split(",");
+			//当前被点击的所有sku组合放进去
+			skus.push(curr);
+			  //2.去掉同一行的所有checked
+
+			$("a[class='sku_attr_value checked']").each(function () {
+				skus.push($(this).attr("skus").split(","));
+			})
+			console.log(skus);
+			 // 2.取出他们的交集
+			var fileterEle = skus[0];
+			for(var  i = 1; i < skus.length; i++){
+				fileterEle=$(fileterEle).filter(skus[i]);
+			}
+			console.log("skus的长度：",skus.length);
+			console.log(fileterEle[0]);
+			// $(skus[0].filter(skus[1])[0]);
+			location.href = "http://item.gulimall.com/"+fileterEle[0]+".html";
 		});
 		// $(".sku_attr_value.checked").css({"border":"solid 1px red"});
 		$(function () {
