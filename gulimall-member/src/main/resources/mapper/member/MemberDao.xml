@@ -24,6 +24,13 @@
         <result property="status" column="status"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
+    <select id="checkPhoneUnique" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `ums_member` WHERE mobile = #{phone};
+    </select>
+
+    <select id="checkUserNameUnique" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `ums_member` WHERE username = #{userName};
+    </select>
 
 
 </mapper>

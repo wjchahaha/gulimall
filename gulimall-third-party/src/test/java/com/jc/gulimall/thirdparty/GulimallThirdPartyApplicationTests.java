@@ -1,6 +1,9 @@
 package com.jc.gulimall.thirdparty;
 
 import com.aliyun.oss.OSSClient;
+import com.jc.gulimall.thirdparty.component.SmsComponent;
+import com.jc.gulimall.thirdparty.util.HttpUtils;
+import org.apache.http.HttpResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest
 class GulimallThirdPartyApplicationTests {
@@ -19,6 +24,8 @@ class GulimallThirdPartyApplicationTests {
     void contextLoads() {
     }
 
+    @Autowired
+    private SmsComponent smsComponent;
 
     @Test
     public void saveFile() throws IOException {
@@ -30,6 +37,10 @@ class GulimallThirdPartyApplicationTests {
         System.out.println("wanshi!");
 //        System.out.println("上传完成");
 
+    }
+    @Test
+    void testAuth(){
+        smsComponent.sms("18974927407","【创信】你的验证码是：5873，3分钟内有效！");
     }
 
 }

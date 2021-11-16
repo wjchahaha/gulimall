@@ -48,10 +48,24 @@ spring:
             - RewritePath=/api/?(?<segment>.*),/renren-fast/$\{segment}
 
 
+
+        - id: search.gulimall.com_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
+
+
         - id: gulimall.com_route
           uri: lb://gulimall-product
           predicates:
-            - Host=**.gulimall.com
+            - Host=gulimall.com,item.gulimall.com
+
+
+        - id: auth.gulimall.com_route
+          uri: lb://gulimall-auth-server
+          predicates:
+            - Host=auth.gulimall.com
+
 
 
 #localhost:88/api/captcha.jpg ->localhost:8080/renren-fast/captcha.jpg

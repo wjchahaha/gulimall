@@ -5,6 +5,11 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    sms:
+      host: https://cxkjsms.market.alicloudapi.com
+      path: /chuangxinsms/dxjk
+      appcode: 31446cedac52402582f4476939410e46
+
 #    alicloud:
 #      access-key: LTAI5tD6K8QBcMgDrTZUH31q
 #      secret-key: TwGJknACnNG9APi1U3LuttkgDHqi8s

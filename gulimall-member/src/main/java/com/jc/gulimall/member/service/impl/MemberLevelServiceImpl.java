@@ -1,5 +1,6 @@
 package com.jc.gulimall.member.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,6 +17,8 @@ import com.jc.gulimall.member.service.MemberLevelService;
 @Service("memberLevelService")
 public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelDao, MemberLevelEntity> implements MemberLevelService {
 
+    @Autowired
+    private MemberLevelDao memberLevelDao;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<MemberLevelEntity> page = this.page(
@@ -24,6 +27,13 @@ public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelDao, MemberLe
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public Long getDefaultLevel() {
+        Long defaultLevel = memberLevelDao.getDefaultLevel();
+
+        return defaultLevel;
     }
 
 }
