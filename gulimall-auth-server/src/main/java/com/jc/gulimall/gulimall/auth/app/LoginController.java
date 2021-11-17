@@ -1,6 +1,8 @@
 package com.jc.gulimall.gulimall.auth.app;
 
+import com.alibaba.fastjson.TypeReference;
 import com.jc.common.utils.R;
+import com.jc.gulimall.gulimall.auth.feign.MemberFeignService;
 import com.jc.gulimall.gulimall.auth.feign.ThirdPartyService;
 import com.jc.gulimall.gulimall.auth.vo.UserRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +34,10 @@ public class LoginController {
 
     @Autowired
     private ThirdPartyService thirdPartyService;
+
+    @Autowired
+    private MemberFeignService memberFeignService;
+
     @GetMapping("/reg.html")
     public String toReg(){
         return "reg";
@@ -63,8 +70,7 @@ public class LoginController {
      */
     @PostMapping("/regist")
     public String  regist(@Valid UserRegistVo vo, BindingResult result, RedirectAttributes model){
-        if(result.hasErrors()){
-
+        if(result.hasErrors()){//提交数据有误
             Map<String, String> errors = result.getFieldErrors().stream().collect(Collectors.toMap(fieldError -> {
                 return fieldError.getField();
             }, message -> {
@@ -73,9 +79,22 @@ public class LoginController {
             model.addFlashAttribute("errors",errors);
             return "redirect:http://auth.gulimall.com/reg.html";
         }
+        //如果数据没有格式问题，还是会失败因为已经手机号还有用户名已经存在
         //注册,调用远程服务进行注册
+        R regist = memberFeignService.regist(vo);
+
+        if (regist.getCode() == 0){//成功
+
+            return "redirect:http://auth.gulimall.com/login.html";
+        }else{//失败
+
+            Map<String,String> errors = new HashMap<>();
+            errors.put("msg",regist.getData(new TypeReference<String>(){}));
+
+            model.addFlashAttribute("errors",errors);
+            return "redirect:http://auth.gulimall.com/reg.html";
+        }
 
 
-        return "redirect:/login.html";
     }
 }

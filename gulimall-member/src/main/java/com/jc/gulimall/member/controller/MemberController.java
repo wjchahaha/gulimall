@@ -3,6 +3,7 @@ package com.jc.gulimall.member.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.jc.common.exception.BizCodeEnume;
 import com.jc.gulimall.member.feign.CouponFeignService;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
@@ -38,10 +39,11 @@ public class MemberController {
     public R regist(@RequestBody MemberRegistVo vo){
         try {
             memberService.regist(vo);
-        }catch (RuntimeException e){
-            e.printStackTrace();
+        }catch (PhoneNoUniqueException e){
+            return R.error(BizCodeEnume.PHONE_EXIST_EXCEPTION.getCode(),BizCodeEnume.PHONE_EXIST_EXCEPTION.getMsg());
+        }catch (UserNameNoUniqueException e){
+            return R.error(BizCodeEnume.USERNAME_EXIST_EXCEPTION.getCode(),BizCodeEnume.USERNAME_EXIST_EXCEPTION.getMsg());
         }
-
         return R.ok();
     }
 
