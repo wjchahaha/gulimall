@@ -2,6 +2,7 @@ package com.jc.gulimall.member.dao;
 
 import com.jc.gulimall.member.entity.MemberEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jc.gulimall.member.vo.MemberLoginVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,4 +19,6 @@ public interface MemberDao extends BaseMapper<MemberEntity> {
     int checkPhoneUnique(@Param("phone") String phone);
 
     int checkUserNameUnique(@Param("userName") String userName);
+
+
 }

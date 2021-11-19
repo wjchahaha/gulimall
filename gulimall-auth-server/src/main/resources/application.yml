@@ -1,0 +1,5 @@
+gitee:
+  oauth:
+    clientid: 1df235cb5b450e597a409f9c5253b50523f851bd675e5210196faa32b90a0565
+    clientsecret: ff443864f0ee971552ae3362199b13524bf10d1f6c0c3abaf97adfc62751f4ef
+    callback: http://auth.gulimall.com/success

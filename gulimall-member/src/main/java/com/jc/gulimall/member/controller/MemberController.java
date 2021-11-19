@@ -7,6 +7,8 @@ import com.jc.common.exception.BizCodeEnume;
 import com.jc.gulimall.member.feign.CouponFeignService;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
+import com.jc.gulimall.member.vo.GiteeUserVo;
+import com.jc.gulimall.member.vo.MemberLoginVo;
 import com.jc.gulimall.member.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,14 @@ public class MemberController {
     @Autowired
     private CouponFeignService couponFeignService;
 
+    @PostMapping("oauth/login")
+    public MemberEntity oauthLogin(@RequestBody GiteeUserVo vo){
+        MemberEntity giteeUserVo =  memberService.oauthLogin(vo);
+
+        return giteeUserVo;
+
+    }
+
 
     @PostMapping("/regist")
     public R regist(@RequestBody MemberRegistVo vo){
@@ -45,6 +55,17 @@ public class MemberController {
             return R.error(BizCodeEnume.USERNAME_EXIST_EXCEPTION.getCode(),BizCodeEnume.USERNAME_EXIST_EXCEPTION.getMsg());
         }
         return R.ok();
+    }
+
+
+    @PostMapping("/login")
+    public R login(@RequestBody MemberLoginVo vo){
+
+        MemberEntity entity=memberService.login(vo);
+        if (entity == null){
+            return R.error(BizCodeEnume.LOGINACCT_PASSWORD_EXCEPTION.getCode(),BizCodeEnume.LOGINACCT_PASSWORD_EXCEPTION.getMsg());
+        }
+        return R.ok().put("username",entity.getUsername());
     }
 
     @RequestMapping("/coupons")

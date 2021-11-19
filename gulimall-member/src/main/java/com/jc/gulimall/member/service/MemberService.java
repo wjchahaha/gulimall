@@ -5,6 +5,8 @@ import com.jc.common.utils.PageUtils;
 import com.jc.gulimall.member.entity.MemberEntity;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
+import com.jc.gulimall.member.vo.GiteeUserVo;
+import com.jc.gulimall.member.vo.MemberLoginVo;
 import com.jc.gulimall.member.vo.MemberRegistVo;
 
 import java.util.Map;
@@ -25,5 +27,9 @@ public interface MemberService extends IService<MemberEntity> {
     void checkPhoneUnique(String phone) throws PhoneNoUniqueException;
 
     void checkUserNameUnique(String userName) throws UserNameNoUniqueException;
+
+    MemberEntity login(MemberLoginVo vo);
+
+    MemberEntity oauthLogin(GiteeUserVo vo);
 }
 

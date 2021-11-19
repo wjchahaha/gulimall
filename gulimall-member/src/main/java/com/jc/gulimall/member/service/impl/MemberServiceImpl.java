@@ -1,9 +1,13 @@
 package com.jc.gulimall.member.service.impl;
 
+import com.jc.common.utils.R;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
 import com.jc.gulimall.member.service.MemberLevelService;
+import com.jc.gulimall.member.vo.GiteeUserVo;
+import com.jc.gulimall.member.vo.MemberLoginVo;
 import com.jc.gulimall.member.vo.MemberRegistVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -69,6 +73,50 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     public void checkUserNameUnique(String userName) throws UserNameNoUniqueException {
         if(memberDao.checkUserNameUnique(userName) > 0){
             throw new UserNameNoUniqueException();
+        }
+    }
+
+    @Override
+    public MemberEntity login(MemberLoginVo vo) {
+        String username = vo.getLoginacct();
+        String password = vo.getPassword();
+        //去数据库中查询
+        MemberEntity entity = this.baseMapper.selectOne(new QueryWrapper<MemberEntity>()
+                .eq("username", username)
+                .or()
+                .eq("mobile",username));
+        if (entity == null){
+            return null;
+        }else{
+            String password1 = entity.getPassword();
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            boolean matches = encoder.matches(password, password1);
+            if (matches){
+                return entity;
+            }
+            return null;
+        }
+
+    }
+
+    @Override
+    public MemberEntity oauthLogin(GiteeUserVo vo) {
+        //获取用户id看用户是否在数据库中有
+
+        long id = vo.getId();
+
+        MemberEntity entity = this.baseMapper.selectOne(new QueryWrapper<MemberEntity>().eq("gitee_id", id));
+        if (entity != null){//如果注册过
+            System.out.println("此Gitee不是新用户直接登录！");
+            return entity;
+        }else {//如果没注册过 则进行注册
+            MemberEntity regist = new MemberEntity();
+            regist.setLevelId(1L);
+            regist.setGiteeId(vo.getId());
+            regist.setUsername(vo.getName());
+            System.out.println("此Gitee是个新用户,要进行注册！");
+            this.baseMapper.insert(regist);
+            return regist;
         }
     }
 

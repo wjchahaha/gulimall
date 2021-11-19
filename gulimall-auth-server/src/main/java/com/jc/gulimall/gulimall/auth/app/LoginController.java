@@ -4,9 +4,11 @@ import com.alibaba.fastjson.TypeReference;
 import com.jc.common.utils.R;
 import com.jc.gulimall.gulimall.auth.feign.MemberFeignService;
 import com.jc.gulimall.gulimall.auth.feign.ThirdPartyService;
+import com.jc.gulimall.gulimall.auth.vo.UserLoginVo;
 import com.jc.gulimall.gulimall.auth.vo.UserRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,12 +92,35 @@ public class LoginController {
         }else{//失败
 
             Map<String,String> errors = new HashMap<>();
-            errors.put("msg",regist.getData(new TypeReference<String>(){}));
+            errors.put("msg",regist.getData("msg",new TypeReference<String>(){}));
 
             model.addFlashAttribute("errors",errors);
             return "redirect:http://auth.gulimall.com/reg.html";
         }
 
+    }
+
+
+    @PostMapping("/login")
+    public String  login(@Valid UserLoginVo vo,RedirectAttributes redirectAttributes,Model model){
+        R r = memberFeignService.login(vo);
+        //远程登录
+        R login = memberFeignService.login(vo);
+        if (login.getCode() == 0){
+            //TODO 商城主页显示信息
+            redirectAttributes.addFlashAttribute("username",login.get("username"));
+            return "redirect:http://gulimall.com";
+        }else{
+            Map<String,String> map = new HashMap<>();
+            map.put("msg",login.getData("msg",new TypeReference<String>(){}));
+            redirectAttributes.addFlashAttribute("errors",map);
+            return "redirect:http://auth.gulimall.com/login.html";
+        }
+
+
 
     }
+
+
+
 }
