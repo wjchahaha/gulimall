@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -91,6 +92,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *      3）读多写多：直接去数据库
  *
  */
+
+@EnableRedisHttpSession
 @EnableCaching
 @EnableTransactionManagement
 @EnableFeignClients(basePackages = "com.jc.gulimall.product.feign")

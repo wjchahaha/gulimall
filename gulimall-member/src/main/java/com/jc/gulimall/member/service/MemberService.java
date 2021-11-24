@@ -2,7 +2,7 @@ package com.jc.gulimall.member.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jc.common.utils.PageUtils;
-import com.jc.gulimall.member.entity.MemberEntity;
+import com.jc.common.vo.MemberEntity;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
 import com.jc.gulimall.member.vo.GiteeUserVo;

@@ -67,5 +67,11 @@ spring:
             - Host=auth.gulimall.com
 
 
+        - id: cart.gulimall.com_route
+          uri: lb://gulimall-cart
+          predicates:
+            - Host=cart.gulimall.com
+
+
 
 #localhost:88/api/captcha.jpg ->localhost:8080/renren-fast/captcha.jpg

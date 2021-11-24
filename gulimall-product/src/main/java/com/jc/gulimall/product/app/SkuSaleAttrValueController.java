@@ -1,6 +1,7 @@
 package com.jc.gulimall.product.app;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,13 @@ public class SkuSaleAttrValueController {
     @Autowired
     private SkuSaleAttrValueService skuSaleAttrValueService;
 
+
+    @RequestMapping("/SkuSaleAttrValue/{skuId}")
+    public List<String> skuSaleAttrValue(@PathVariable("skuId") Long skuId){
+        List<String> res = skuSaleAttrValueService.skuSaleAttrValue(skuId);
+
+        return res;
+    }
     /**
      * 列表
      */

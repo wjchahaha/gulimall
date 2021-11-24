@@ -56,8 +56,9 @@
 							</li>
 						</ul>
 						<ul class="header_ul_right">
-							<li style="border: 0;"><a href="/static/item/../登录页面\index.html" class="aa">你好，请登录</a></li>
-							<li><a href="/static/item/../注册页面\index.html" style="color: red;">免费注册</a> |</li>
+							<li style="border: 0;"><a th:if="${session.user == null}" href="http:auth.gulimall.com/login.html" class="aa">你好，请登录</a></li>
+							<li style="border: 0;"><a th:if="${session.user != null}" href="http:auth.gulimall.com/login.html" class="aa">[[${session.user.nickname}]]</a></li>
+							<li><a th:if="${session.user == null}" href="http:auth.gulimall.com/reg.html" style="color: red;">免费注册</a> |</li>
 							<li><a href="/static/item/javascript:;" class="aa">我的订单</a> |</li>
 							<li class="jingdong"><a href="/static/item/javascript:;">我的京东</a><span class="glyphicon glyphicon-menu-down">|</span>
 								<ol class="jingdong_ol">
@@ -250,9 +251,10 @@
 				<nav>
 				<div class="nav_min">
 					<div class="nav_top">
-						<div class="nav_top_one"><a href="/static/item/#"><img src="/static/item/img/111.png"/></a></div>
+						<div class="nav_top_one"><a href="http://gulimall.com"><img src="/static/item/img/111.png"/></a></div>
 						<div class="nav_top_two"><input type="text"/><button>搜索</button></div>
-						<div class="nav_top_three"><a href="/static/item/../JD_Shop/One_JDshop.html">我的购物车</a><span class="glyphicon glyphicon-shopping-cart"></span>
+						<div class="nav_top_three"><a href="http://cart.gulimall.com/cartList
+">我的购物车</a><span class="glyphicon glyphicon-shopping-cart"></span>
 							<div class="nav_top_three_1">
 								<img src="/static/item/img/44.png"/>购物车还没有商品，赶紧选购吧！
 							</div>
@@ -616,7 +618,7 @@
 
 						<div class="box-btns clear">
 							<div class="box-btns-one">
-								<input type="text" name="" id="" value="1" />
+								<input type="text" id="skuCount" value="1" />
 								<div class="box-btns-one1">
 
 									<div>
@@ -633,8 +635,8 @@
 								</div>
 							</div>
 							<div class="box-btns-two">
-								<a href="/static/item/../商品分类\index.html">
-									立即预约
+								<a  id="addToCartA" th:attr="skuId=${item.info.skuId}" >
+									加入购物车
 								</a>
 							</div>
 							<div class="box-btns-three">
@@ -1242,6 +1244,13 @@
 		$(function () {
 			$(".sku_attr_value").parent().css({"border":"solid 1px #CCC"});
 			$("a[class='sku_attr_value checked']").parent().css({"border":"solid 1px red"});
+		})
+
+		$("#addToCartA").click(function () {
+			var num = $("#skuCount").val();
+			var skuId = $(this).attr("skuId");
+			location.href = "http://cart.gulimall.com/addToCart?skuId="+skuId+"&num="+num;
+			return false;
 		})
 	</script>
 

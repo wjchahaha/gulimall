@@ -1,13 +1,12 @@
 package com.jc.gulimall.member.service.impl;
 
-import com.jc.common.utils.R;
+import com.jc.common.vo.MemberEntity;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
 import com.jc.gulimall.member.service.MemberLevelService;
 import com.jc.gulimall.member.vo.GiteeUserVo;
 import com.jc.gulimall.member.vo.MemberLoginVo;
 import com.jc.gulimall.member.vo.MemberRegistVo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import com.jc.common.utils.PageUtils;
 import com.jc.common.utils.Query;
 
 import com.jc.gulimall.member.dao.MemberDao;
-import com.jc.gulimall.member.entity.MemberEntity;
 import com.jc.gulimall.member.service.MemberService;
 
 
@@ -114,6 +112,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             regist.setLevelId(1L);
             regist.setGiteeId(vo.getId());
             regist.setUsername(vo.getName());
+            regist.setNickname(vo.getName());
             System.out.println("此Gitee是个新用户,要进行注册！");
             this.baseMapper.insert(regist);
             return regist;

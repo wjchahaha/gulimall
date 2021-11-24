@@ -1,8 +1,7 @@
 package com.jc.gulimall.member.dao;
 
-import com.jc.gulimall.member.entity.MemberEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jc.gulimall.member.vo.MemberLoginVo;
+import com.jc.common.vo.MemberEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

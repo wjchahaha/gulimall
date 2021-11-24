@@ -126,11 +126,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         }, executor);
 
         CompletableFuture<Void> descFuture = infoFuture.thenAcceptAsync((res) -> {
+            //4.spu介绍
             SpuInfoDescEntity spuDesc = spuInfoDescService.getById(res.getSpuId());
             vo.setDesc(spuDesc);
         }, executor);
-        
+
         CompletableFuture<Void> groupAttrsFuture = infoFuture.thenAcceptAsync((res) -> {
+            //5.规则参数信息
             List<SpuItemAttrGroupAttrVo> groupAttrs = attrGroupService.getAttrGroupBySpuId(res.getSpuId(), res.getCatalogId());
             vo.setGroupAttrs(groupAttrs);
         }, executor);
@@ -142,9 +144,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         }, executor);
 
         CompletableFuture.allOf(saleAttrFuture,descFuture,groupAttrsFuture,imagesFuture).get();
-        //4.spu介绍
 
-        //5.规则参数信息
 
         return vo;
     }

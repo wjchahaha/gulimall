@@ -15,6 +15,8 @@ spring:
   redis:
     host: 192.168.56.10
     port: 6379
+  session:
+    store-type: redis
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -26,7 +28,7 @@ mybatis-plus:
       logic-not-delete-value: 1
 
 server:
-      port: 10000
+      port: 10001
       logging:
         level:
           com.jc.gulimall: error

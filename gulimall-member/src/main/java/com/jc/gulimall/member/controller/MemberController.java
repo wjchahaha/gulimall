@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.jc.common.exception.BizCodeEnume;
+import com.jc.common.vo.MemberEntity;
 import com.jc.gulimall.member.feign.CouponFeignService;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
@@ -13,7 +14,6 @@ import com.jc.gulimall.member.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.jc.gulimall.member.entity.MemberEntity;
 import com.jc.gulimall.member.service.MemberService;
 import com.jc.common.utils.PageUtils;
 import com.jc.common.utils.R;
@@ -65,7 +65,7 @@ public class MemberController {
         if (entity == null){
             return R.error(BizCodeEnume.LOGINACCT_PASSWORD_EXCEPTION.getCode(),BizCodeEnume.LOGINACCT_PASSWORD_EXCEPTION.getMsg());
         }
-        return R.ok().put("username",entity.getUsername());
+        return R.ok().setData(entity);
     }
 
     @RequestMapping("/coupons")

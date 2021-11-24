@@ -20,6 +20,11 @@
             <result column="sku_ids" property="skuIds"></result>
         </collection>
     </resultMap>
+    <select id="skuSaleAttrValue" resultType="java.lang.String">
+        SELECT CONCAT(attr_name,":",attr_value)
+        FROM `pms_sku_sale_attr_value`
+        WHERE sku_id = #{skuId};
+    </select>
     <select id="getSkuSaleAttrBySpuId" resultMap="SkuItemSaleAttrVo">
 
         SELECT ssav.attr_id     attr_id,
