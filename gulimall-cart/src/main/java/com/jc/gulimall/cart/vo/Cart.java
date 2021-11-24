@@ -57,12 +57,16 @@ public class Cart {
     public BigDecimal getTotalAmount() {
         //1.购物项总价格
         BigDecimal total =  new BigDecimal("0");
-        for (CartItem item : items) {
-            total.add(item.getTotalPrice());
+        if(items != null && items.size() > 0) {
+            for (CartItem item : items) {
+                BigDecimal totalPrice = item.getTotalPrice();
+                total = total.add(totalPrice);
+            }
         }
 
         //2.减免价格
-        return total.subtract(getReduce());
+        total = total.subtract(reduce);
+        return total;
     }
 
     public void setTotalAmount(BigDecimal totalAmount) {

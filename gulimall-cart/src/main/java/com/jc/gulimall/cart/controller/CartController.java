@@ -2,6 +2,7 @@ package com.jc.gulimall.cart.controller;
 
 import com.jc.gulimall.cart.interceptor.CartInteceptor;
 import com.jc.gulimall.cart.service.CartService;
+import com.jc.gulimall.cart.vo.Cart;
 import com.jc.gulimall.cart.vo.CartItem;
 import com.jc.gulimall.cart.vo.UserInfoTo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,21 +28,42 @@ public class CartController {
     @Autowired
     private CartService cartService;
     /**
-     * 在获取购物车列表前  判断用户是否登录
+     * 在获取购物车前  判断用户是否登录
      * 1.登录
      * 2.未登录
      * 3.通过拦截器实现
      * @return
      */
     @GetMapping("/cartList")
-    public String toCartList(){
-//        ThreadLocal<UserInfoTo> threadLocal = CartInteceptor.threadLocal;
-//        UserInfoTo userInfoTo = threadLocal.get();
-//
-//        System.out.println(userInfoTo);
-//
+    public String toCartList(Model model) throws ExecutionException, InterruptedException {
+        Cart cart = cartService.getCart();
+        model.addAttribute("cart",cart);
+
         return "cartList";
     }
+
+    @GetMapping("/deleteItem")
+    public String deleteItem(@RequestParam("skuId") Long skuId){
+
+        cartService.deleteItem(skuId);
+        return "redirect:http://cart.gulimall.com/cartList";
+    }
+
+    @GetMapping("/countItem")
+    public String countItem(@RequestParam("skuId") Long skuId,@RequestParam("count") Integer count){
+        cartService.countItem(skuId,count);
+
+        return "redirect:http://cart.gulimall.com/cartList";
+    }
+
+    @GetMapping("/checkItem")
+    public String checkItem(@RequestParam("skuId") Long skuId,@RequestParam("check") Integer check)  {
+
+        cartService.checkItem(skuId,check);
+
+        return "redirect:http://cart.gulimall.com/cartList";
+    }
+
     @GetMapping("/addToCart")
     public String addToCart(@RequestParam("skuId") Long skuId,
                             @RequestParam("num") int num,
