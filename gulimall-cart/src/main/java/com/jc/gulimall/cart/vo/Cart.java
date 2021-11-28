@@ -17,7 +17,7 @@ import java.util.List;
  * get必须重写
 **/
 public class Cart {
-    List<CartItem> items;
+    private List<CartItem> items;
 
     private Integer countNum;//商品总数
 
