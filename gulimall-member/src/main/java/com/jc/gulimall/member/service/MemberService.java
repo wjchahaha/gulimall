@@ -3,12 +3,14 @@ package com.jc.gulimall.member.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jc.common.utils.PageUtils;
 import com.jc.common.vo.MemberEntity;
+import com.jc.gulimall.member.entity.MemberReceiveAddressEntity;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
 import com.jc.gulimall.member.vo.GiteeUserVo;
 import com.jc.gulimall.member.vo.MemberLoginVo;
 import com.jc.gulimall.member.vo.MemberRegistVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,5 +33,7 @@ public interface MemberService extends IService<MemberEntity> {
     MemberEntity login(MemberLoginVo vo);
 
     MemberEntity oauthLogin(GiteeUserVo vo);
+
+
 }
 

@@ -1,9 +1,12 @@
 package com.jc.gulimall.product.app;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
 
+import com.jc.gulimall.product.entity.SkuInfoEntity;
+import com.jc.gulimall.product.service.SkuInfoService;
 import com.jc.gulimall.product.vo.SpuSaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,9 @@ import com.jc.common.utils.R;
 public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
+
+    @Autowired
+    private SkuInfoService skuInfoService;
     /**
      * 商品上架
      */
@@ -36,6 +42,12 @@ public class SpuInfoController {
         return R.ok();
     }
 
+
+    @GetMapping("/{skuId}/price")
+    public BigDecimal getPrice(@PathVariable("skuId") Long skuId){
+        SkuInfoEntity byId = skuInfoService.getById(skuId);
+        return byId.getPrice();
+    }
 
     /**
      * 列表

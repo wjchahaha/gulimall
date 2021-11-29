@@ -1,6 +1,7 @@
 package com.jc.gulimall.member.service.impl;
 
 import com.jc.common.vo.MemberEntity;
+import com.jc.gulimall.member.entity.MemberReceiveAddressEntity;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
 import com.jc.gulimall.member.service.MemberLevelService;
@@ -10,6 +11,8 @@ import com.jc.gulimall.member.vo.MemberRegistVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -118,5 +121,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             return regist;
         }
     }
+
+
 
 }

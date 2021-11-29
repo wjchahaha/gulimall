@@ -2,6 +2,7 @@ package com.jc.gulimall.gulimall.auth.app;
 
 import com.alibaba.fastjson.TypeReference;
 import com.jc.common.utils.R;
+import com.jc.common.vo.MemberEntity;
 import com.jc.gulimall.gulimall.auth.feign.MemberFeignService;
 import com.jc.gulimall.gulimall.auth.feign.ThirdPartyService;
 import com.jc.gulimall.gulimall.auth.vo.UserLoginVo;
@@ -47,7 +48,10 @@ public class LoginController {
     }
 
     @GetMapping("/login.html")
-    public String toLogin(){
+    public String toLogin(HttpSession session){
+        if (session.getAttribute("user") != null){
+            return "redirect:http://gulimall.com";
+        }
         return "login";
     }
 
@@ -102,17 +106,18 @@ public class LoginController {
 
 
     @PostMapping("/login")
-    public String  login(@Valid UserLoginVo vo,RedirectAttributes redirectAttributes,Model model){
+    public String  login(@Valid UserLoginVo vo,RedirectAttributes redirectAttributes,Model model,HttpSession session){
         R r = memberFeignService.login(vo);
         //远程登录
         R login = memberFeignService.login(vo);
         if (login.getCode() == 0){
             //TODO 商城主页显示信息
-            redirectAttributes.addFlashAttribute("username",login.get("username"));
+            session.setAttribute("user",login.getData("data",new TypeReference<MemberEntity>(){}));
+//            redirectAttributes.addFlashAttribute("username",login.get("username"));
             return "redirect:http://gulimall.com";
         }else{
             Map<String,String> map = new HashMap<>();
-            map.put("msg",login.getData("msg",new TypeReference<String>(){}));
+            map.put("msg",login.getData("data",new TypeReference<String>(){}));
             redirectAttributes.addFlashAttribute("errors",map);
             return "redirect:http://auth.gulimall.com/login.html";
         }

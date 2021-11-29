@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 	<head>
 		<meta charset="utf-8" />
 		<script src="/static/order/pay/js/jquery-3.1.1.min.js"></script>
@@ -75,6 +74,7 @@
 				</ul>
 				<ul class="header-right">
 					<li>
+
 						<a href="http://auth.gulimall.com/login.html" th:if="${session.user != null}">欢迎：[[${session.user.nickname}]]</a>
 						<a href="http://auth.gulimall.com/login.html" th:if="${session.user == null}">您好,请登录</a>
 					</li>
@@ -601,8 +601,9 @@
 			</div>
 
 			<!--地址-->
-			<div class="top-3">
-				<p>家里</p><span>齐天大圣  北京市  昌平区城区晨曦小区-16号楼 吉利大学  150****2245</span>
+
+			<div th:each="address:${orderConfirmData.address}" class="top-3">
+				<p th:text="${address.name}"></p><span th:text="${address.name}+${' '+address.province}+${' '+address.detailAddress}+${'  '+address.phone}">齐天大圣  北京市  昌平区城区晨曦小区-16号楼 吉利大学  150****2245</span>
 			</div>
 			<p class="p2">更多地址︾</p>
 			<div class="hh1"/></div>
@@ -613,13 +614,6 @@
 			<p>省运费·无续重·随时取</p>
 			<p class="xiang">详情</p>
 		</div>
-
-		<!--地址-->
-		<div class="top-5">
-			<p>北京昌平区</p><span>北京市  昌平区城区晨曦小区-16号楼 吉利大学  齐天大圣 150****2245</span><img src="/static/order/pay/img/09.png" /><span>距收货人0米</span>
-			<p class="p3">距离最近</p><span class="xiu">修改自提点</span>
-		</div>
-		<div class="hh1" /></div>
 
 		<!--支付方式-->
 		<h4 class="h4">支付方式</h4>
@@ -668,17 +662,23 @@
 				<h5>商家：谷粒学院自营</h5>
 				<div><button>换购</button><span>已购满20.00元，再加49.90元，可返回购物车领取赠品</span></div>
 				<!--图片-->
-				<div class="yun1">
-					<img src="/static/order/pay/img/im_03.png" class="yun"/>
-					<div class="mi">
-						<p>小米（MI）小米手环2 智能运动 心率检测 来 <span style="color: red;"> ￥ 149.00</span> <span> x1 </span> <span>有货</span></p>
-						<p>电提醒 久坐提醒 LED显示器 时间显示 防水记 <span>0.095kg</span></p>
+				<div th:each="item:${orderConfirmData.items}" class="yun1">
+					<img style="height: 150px" th:src="${item.image}" class="yun"/>
+					<div  class="mi">
+						<p  th:text="${item.title}">小米（MI）小米手环2 智能运动 心率检测 来</p>
+						<span th:text="${'￥'+#numbers.formatDecimal(item.price,1,2)}" style="color: red;"></span><br>
+						<span style="color: red"> x[[${item.count}]] </span> <span>[[${orderConfirmData.stocks[item.skuId]?"有货":"无货"}]]</span>
+						<span th:text="${item.weight}+'kg'"></span>
+<!--				<span>0.095kg</span></p>-->
 						<p class="tui-1"><img src="/static/order/pay/img/i_07.png" />支持7天无理由退货</p>
+						<span style="color: red" th:text="${'总额:'+#numbers.formatDecimal(item.getTotalPrice(),1,2)}" class="money">￥ 0.00</span>
 					</div>
+					<br>
+
 				</div>
 
 				<div class="hh1"></div>
-				<p>退换无忧 <span class="money">￥ 0.00</span></p>
+
 			</div>
 		</div>
 		<div class="bto">
@@ -710,9 +710,9 @@
 		<div class="xia">
 			<div class="qian">
 				<p class="qian_y">
-					<span>1</span>
+					<span th:text="${orderConfirmData.getCount()}">[[]]</span>
 					<span>件商品，总商品金额：</span>
-					<span class="rmb">￥28.90</span>
+					<span th:text="'￥'+${#numbers.formatDecimal(orderConfirmData.orderTotalAmount,1,2)}" class="rmb"></span>
 				</p>
 				<p class="qian_y">
 					<span>返现：</span>
@@ -733,9 +733,9 @@
 
 			</div>
 
-			<div class="yfze">
-				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥28.90</span></p>
-				<p class="yfze_b">寄送至： 北京 朝阳区 三环到四环之间 朝阳北路复兴国际大厦23层麦田房产 IT-中心研发二部 收货人：赵存权 188****5052</p>
+			<div class="yfze">orderConfirmData.orderPayAmount
+				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥[[${#numbers.formatDecimal(orderConfirmData.orderPayAmount,1,2)}]]</span></p>
+				<p class="yfze_b">寄送至：   收货人： 188****5052</p>
 			</div>
 			<button class="tijiao">提交订单</button>
 		</div>

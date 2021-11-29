@@ -42,6 +42,8 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private ThreadPoolExecutor executor;
 
+
+
     @Override
     public CartItem addToCart(Long skuId, int num) throws ExecutionException, InterruptedException {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
@@ -149,6 +151,7 @@ public class CartServiceImpl implements CartService {
         CartItem cartItem = getCartItem(skuId);
 
         cartItem.setCheck(check == 1? true : false);
+
         cartOps.put(skuId.toString(),JSONObject.toJSONString(cartItem));
 
     }
@@ -167,6 +170,19 @@ public class CartServiceImpl implements CartService {
     public void deleteItem(Long skuId) {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
         cartOps.delete(skuId.toString());
+    }
+
+    @Override
+    public List<CartItem> getCartByUserId() {
+        List<CartItem> cartItems = getCartItems();
+
+        if(cartItems == null) return null;
+        return cartItems.stream().filter(item -> item.getCheck()).map(item->{
+
+            //更新为最新价格
+            item.setPrice(productFrignService.getPrice(item.getSkuId()));
+            return item;
+        }).collect(Collectors.toList());
     }
 
     public boolean deleteCart(String key){

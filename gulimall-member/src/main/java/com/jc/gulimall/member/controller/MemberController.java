@@ -1,13 +1,16 @@
 package com.jc.gulimall.member.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.jc.common.exception.BizCodeEnume;
 import com.jc.common.vo.MemberEntity;
+import com.jc.gulimall.member.entity.MemberReceiveAddressEntity;
 import com.jc.gulimall.member.feign.CouponFeignService;
 import com.jc.gulimall.member.exception.PhoneNoUniqueException;
 import com.jc.gulimall.member.exception.UserNameNoUniqueException;
+import com.jc.gulimall.member.service.MemberReceiveAddressService;
 import com.jc.gulimall.member.vo.GiteeUserVo;
 import com.jc.gulimall.member.vo.MemberLoginVo;
 import com.jc.gulimall.member.vo.MemberRegistVo;
@@ -33,6 +36,9 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+
+    @Autowired
+    private MemberReceiveAddressService memberReceiveAddressService;
     @Autowired
     private CouponFeignService couponFeignService;
 
@@ -44,6 +50,10 @@ public class MemberController {
 
     }
 
+    @GetMapping("/{memberId}/getAddress")
+    public List<MemberReceiveAddressEntity> getAddress(@PathVariable("memberId") Long memberId){
+        return memberReceiveAddressService.getAddress(memberId);
+    }
 
     @PostMapping("/regist")
     public R regist(@RequestBody MemberRegistVo vo){

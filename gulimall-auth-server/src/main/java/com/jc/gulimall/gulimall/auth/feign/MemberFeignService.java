@@ -1,8 +1,8 @@
 package com.jc.gulimall.gulimall.auth.feign;
 
 import com.jc.common.utils.R;
+import com.jc.common.vo.MemberEntity;
 import com.jc.gulimall.gulimall.auth.vo.GiteeUserVo;
-import com.jc.gulimall.gulimall.auth.vo.MemberEntity;
 import com.jc.gulimall.gulimall.auth.vo.UserLoginVo;
 import com.jc.gulimall.gulimall.auth.vo.UserRegistVo;
 import org.springframework.cloud.openfeign.FeignClient;

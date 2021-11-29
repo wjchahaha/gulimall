@@ -1,10 +1,10 @@
 package com.jc.gulimall.gulimall.auth.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jc.common.vo.MemberEntity;
 import com.jc.gulimall.gulimall.auth.feign.MemberFeignService;
 import com.jc.gulimall.gulimall.auth.vo.Gitee;
 import com.jc.gulimall.gulimall.auth.vo.GiteeUserVo;
-import com.jc.gulimall.gulimall.auth.vo.MemberEntity;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,9 +14,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -24,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.security.PrivateKey;
-import java.util.UUID;
 
 /**
 * @program: gulimall
@@ -70,8 +65,8 @@ public class GiteeController {
      * 授权回调  request是码云服务器传回给浏览器一个请求   用户授权吗 code
      */
     @GetMapping(value = "/success")
-    public String qqCallback(HttpServletRequest request) throws Exception {
-        HttpSession session = request.getSession();
+    public String qqCallback(HttpServletRequest request,HttpSession session) throws Exception {
+//        HttpSession session = request.getSession();
         // 得到Authorization Code
         String code = request.getParameter("code");
         System.out.println("用户授权码-->"+code);
@@ -107,6 +102,8 @@ public class GiteeController {
          */
         GiteeUserVo giteeUser =(GiteeUserVo) JSONObject.parseObject(jsonObject.toString(),GiteeUserVo.class);
         MemberEntity memberEntity = memberFeignService.oauthLogin(giteeUser);
+        session.setAttribute("user",memberEntity);
+
         System.out.println("用户已保护信息已获取完成！即将要跳转,用户信息"+jsonObject);
 
         return "redirect:http://gulimall.com";
