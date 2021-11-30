@@ -42,6 +42,13 @@ public class SpuInfoController {
         return R.ok();
     }
 
+    @GetMapping("/skuId/{id}")
+    public R getSpuBySkuId(@PathVariable("id") Long skuId){
+        SpuInfoEntity byId = spuInfoService.getSpuInfoBySkuId(skuId);
+
+        return R.ok().setData(byId);
+    }
+
 
     @GetMapping("/{skuId}/price")
     public BigDecimal getPrice(@PathVariable("skuId") Long skuId){

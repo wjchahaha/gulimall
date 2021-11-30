@@ -7,6 +7,7 @@ package com.jc.common.exception;
  * 13 购物车
  * 14 物流
  * 15 用户
+ * 21 库存
  */
 public enum BizCodeEnume {
     VAILD_EXCEPTION(10000,"参数格式异常"),
@@ -14,7 +15,8 @@ public enum BizCodeEnume {
     PRODUCT_UP_EXCEPTION(11000,"商品上架异常"),
     PHONE_EXIST_EXCEPTION(15001,"手机号已存在异常"),
     USERNAME_EXIST_EXCEPTION(15002,"用户名已存在异常"),
-    LOGINACCT_PASSWORD_EXCEPTION(15003,"手机号或密码错误");
+    LOGINACCT_PASSWORD_EXCEPTION(15003,"手机号或密码错误"),
+    NO_STOCK_EXCEPTION(21000,"商品库存不足");
 
     private int code ;
     private String msg;

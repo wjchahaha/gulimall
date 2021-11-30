@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jc.common.utils.PageUtils;
 import com.jc.gulimall.order.entity.OrderEntity;
 import com.jc.gulimall.order.vo.OrderConfirmVo;
+import com.jc.gulimall.order.vo.OrderSubmitVo;
+import com.jc.gulimall.order.vo.SubmitOrderResVo;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -20,5 +22,7 @@ public interface OrderService extends IService<OrderEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     OrderConfirmVo getOrderConfirmData() throws ExecutionException, InterruptedException;
+
+    SubmitOrderResVo submitOrder(OrderSubmitVo vo);
 }
 

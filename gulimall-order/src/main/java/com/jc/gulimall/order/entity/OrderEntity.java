@@ -56,7 +56,7 @@ public class OrderEntity implements Serializable {
 	/**
 	 * 运费金额
 	 */
-	private BigDecimal freightAmount;
+	private BigDecimal freightAmount =new BigDecimal("9.00");
 	/**
 	 * 促销优化金额（促销价、满减、阶梯价）
 	 */

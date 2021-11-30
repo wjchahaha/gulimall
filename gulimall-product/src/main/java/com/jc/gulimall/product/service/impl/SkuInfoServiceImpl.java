@@ -33,15 +33,19 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     private SkuImagesService skuImagesService;
+
     @Autowired
     private SkuSaleAttrValueService saleAttrValueService;
+
     @Autowired
     private SpuInfoDescService spuInfoDescService;
 
     @Autowired
     private ThreadPoolExecutor executor;
+
     @Autowired
     private AttrGroupService attrGroupService;
+
     @Autowired
     private SkuSaleAttrValueService skuSaleAttrValueService;
 

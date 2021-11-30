@@ -178,8 +178,7 @@ public class CartServiceImpl implements CartService {
 
         if(cartItems == null) return null;
         return cartItems.stream().filter(item -> item.getCheck()).map(item->{
-
-            //更新为最新价格
+            //更新为最新价格 去数据库中查
             item.setPrice(productFrignService.getPrice(item.getSkuId()));
             return item;
         }).collect(Collectors.toList());

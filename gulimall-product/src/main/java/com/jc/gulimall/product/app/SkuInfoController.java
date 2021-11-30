@@ -3,6 +3,8 @@ package com.jc.gulimall.product.app;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.jc.gulimall.product.entity.SpuInfoEntity;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,11 @@ public class SkuInfoController {
     @Autowired
     private SkuInfoService skuInfoService;
 
+
+    /**
+     * 根据一个skuId返回一个spu
+     *
+     */
 
     /**
      * 列表

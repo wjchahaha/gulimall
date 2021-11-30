@@ -1,6 +1,11 @@
 package com.jc.gulimall.order;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.jc.common.utils.R;
 import com.jc.gulimall.order.entity.OrderEntity;
+import com.jc.gulimall.order.feign.MemberFeignService;
+import com.jc.gulimall.order.vo.MemberAddressVo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +29,17 @@ class GulimallOrderApplicationTests {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    private MemberFeignService memberFeignService;
+    @Test
+    public void testGetAddress(){
+        R info = memberFeignService.info(2L);
+        Object memberReceiveAddress = info.get("memberReceiveAddress");
+        String jsonString = JSONObject.toJSONString(memberReceiveAddress);
+        MemberAddressVo addressVo = JSON.parseObject(jsonString, MemberAddressVo.class);
+
+        System.out.println(1);
+    }
 
     @Test
     public void testSendMessage(){
