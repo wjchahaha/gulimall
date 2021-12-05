@@ -72,9 +72,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return (menu1.getSort() == null ? 0 : menu1.getSort()) - (menu2.getSort() == null ? 0 : menu2.getSort());
         }).collect(Collectors.toList());
 
-
         return level1menus;
     }
+
 
 
     @Override
@@ -159,8 +159,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
 
     @Cacheable(value = "category",key = "#root.methodName",sync = true)
-    @Override
-    public Map<String, List<Catelog2Vo>> getCatalogJson (){
+//    @Override
+    public Map<String, List<Catelog2Vo>> oldGetCatalogJson (){
         System.out.println("去数据库中查........并且getCatalogJson方法返回的数据被放入缓存");
 
         //获取所有的分类
@@ -213,7 +213,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return res;
     }
     //实现分布式锁的方法：并没有实现缓存一致性
-    public Map<String, List<Catelog2Vo>> getCatalogJson2() {
+
+    public Map<String, List<Catelog2Vo>> getCatalogJson() {
         /**
          * 要想完美使用缓存
          * 1.null值进行缓存：解决缓存穿透
@@ -264,6 +265,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //占好位置的同时一定要设置过期时间，如果占好位置后,执行完了业务逻辑，要删除锁的时候要断电了，就造成死锁了
         //所以为了防止断电宕机 我们要设置锁的过期时间
         String uuid = UUID.randomUUID().toString();
+
         Boolean lock = cache.opsForValue().setIfAbsent("lock", uuid, 3000, TimeUnit.SECONDS);
         if (lock) { //拿到锁
             //执行业务
@@ -274,15 +276,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             } finally {//执行完了进行原子删锁
                 //lua脚本
                 String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1])  else  return 0 end";
-                //原子删锁
+
+
+                //            //获取值进行对比 成功则删除——>原子操作
+//            if (uuid.equals(cache.opsForValue().get("lock"))){//会导致释放别人锁的问题
+//                cache.delete("lock");
+//            }
+
+                //原子删锁 获取锁和删除锁要同时
+                //因为去redis中获取锁返回还需要一段时间 如果在返回来这段期间锁过期了 别的线程拿到了锁 我们把刚拿到线程的锁给删除了这样就没锁住
                 cache.execute(new DefaultRedisScript<Long>(script, Long.class),
                         Arrays.asList("lock"),
                         uuid);
             }
-//            //获取值进行对比 成功则删除——>原子操作
-//            if (uuid.equals(cache.opsForValue().get("lock"))){//会导致释放别人锁的问题
-//                cache.delete("lock");
-//            }
+
 
             return catalogJsonFromDb;
         } else {

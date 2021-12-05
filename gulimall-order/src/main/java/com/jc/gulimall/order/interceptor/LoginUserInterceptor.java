@@ -3,6 +3,7 @@ package com.jc.gulimall.order.interceptor;
 import com.jc.common.constant.AuthServerConstant;
 import com.jc.common.vo.MemberEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,12 +25,16 @@ public class LoginUserInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String uri = request.getRequestURI();
+        boolean match = new AntPathMatcher().match("/order/order/getStatus/**", uri);
+        if (match){
+            return true;
+        }
         //判断用户是否登录 true是拦截
         MemberEntity user = (MemberEntity) request.getSession().getAttribute(AuthServerConstant.LOGIN_USER);
         if (user != null){
             loginUser.set(user);
             //过去了
-
             return true;
         }else{
             //为空的话就拦截

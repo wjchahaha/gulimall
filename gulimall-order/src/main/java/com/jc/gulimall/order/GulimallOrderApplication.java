@@ -15,6 +15,14 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * 4.RabbitListener 标在方法和类上
  * 5.RabbitHandler 标在方法上 重载区分不同的消息
  *
+ * ======Seata控制分布式事务=========
+ * 1)为每一个微服务创建undo_Log
+ * 2)安装事务协调器： seata-server  seata-all:1.1.0
+ * 3)整合
+ *  1.导入依赖
+ *  2.解压并启动seata-server
+ *
+ *
  */
 @EnableFeignClients("com.jc.gulimall.order.feign")
 @EnableRedisHttpSession

@@ -11,6 +11,7 @@ import com.jc.gulimall.ware.vo.SkuHasStockVo;
 import com.jc.gulimall.ware.vo.WareSkuLockVo;
 import org.apache.tomcat.jni.BIOCallback;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.jc.gulimall.ware.entity.WareSkuEntity;
@@ -33,6 +34,7 @@ public class WareSkuController {
     private WareSkuService wareSkuService;
 
 
+    @Transactional
     @PostMapping("/order/lockStock")
     public R lockStock(@RequestBody WareSkuLockVo vo){
         try {
@@ -41,7 +43,6 @@ public class WareSkuController {
         }catch (NoStockException e){
             return R.error(BizCodeEnume.NO_STOCK_EXCEPTION.getCode(), BizCodeEnume.NO_STOCK_EXCEPTION.getMsg());
         }
-
 
     }
     //查询sku是否有库存
@@ -62,7 +63,6 @@ public class WareSkuController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

@@ -16,4 +16,5 @@ public interface WmsFeignService {
 
     @PostMapping("/ware/waresku/order/lockStock")
     R lockStock(@RequestBody WareSkuLockVo vo);
+
 }

@@ -81,4 +81,5 @@ class GulimallOrderApplicationTests {
         log.info("binding创建成功",binding);
     }
 
+
 }

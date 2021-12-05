@@ -100,6 +100,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
      *
      * @param vo
      */
+
     @Transactional
     @Override
     public void saveSpuInfo(SpuSaveVo vo) {

@@ -345,6 +345,7 @@
 </div>
 
 <p class="p1">填写并核对订单信息</p>
+<span style="color: red" th:if="${session.alert != null}" th:text="${session.alert}"></span>
 <div class="section">
     <!--收货人信息-->
     <div class="top-2">

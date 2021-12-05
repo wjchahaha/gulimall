@@ -149,7 +149,6 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         CompletableFuture.allOf(saleAttrFuture,descFuture,groupAttrsFuture,imagesFuture).get();
 
-
         return vo;
     }
 

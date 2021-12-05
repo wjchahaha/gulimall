@@ -43,13 +43,14 @@ import com.jc.common.utils.Query;
 import com.jc.gulimall.order.dao.OrderDao;
 import com.jc.gulimall.order.entity.OrderEntity;
 import com.jc.gulimall.order.service.OrderService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.swing.*;
 
-@RabbitListener(queues = "jc.java.queue")
+//@RabbitListener(queues = "jc.java.queue")
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
@@ -142,6 +143,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return vo;
     }
 
+    //本地事务： 在分布式系统中 只能控制住自己服务的回滚 控制不了其他服务的回滚
+    //分布式事务：网络抖动等原因。
+    @Transactional
     @Override
     public SubmitOrderResVo submitOrder(OrderSubmitVo vo) {
         SubmitOrderResVo response = new SubmitOrderResVo();
@@ -159,12 +163,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             response.setCode(1);
             OrderCreateTo order = createOrder(vo);
             BigDecimal payAmount = order.getOrderEntity().getPayAmount();
-            BigDecimal payPrice = vo.getPayPrice();
-            if(Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01){
+            BigDecimal payPrice = vo.getPayPrice();//65985
+            if(Math.abs(payAmount.subtract(payPrice).doubleValue()) < 10){
                 //验价成功
-                //保存到数据库
+                //3.TODO 保存订单 以及订单详情
                 save(order);
-
+                
                 //锁定库存  有异常的话回滚
                 List<OrderItemVo> collect = order.getOrderItems().stream().map(item -> {
                     OrderItemVo orderItemVo = new OrderItemVo();
@@ -175,20 +179,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 }).collect(Collectors.toList());
                 WareSkuLockVo wareSkuLockVo = new WareSkuLockVo();
                 wareSkuLockVo.setLocks(collect);
-                //TODO 远程锁库存
+                wareSkuLockVo.setOrderSn(order.getOrderEntity().getOrderSn());
+                //TODO 4.远程锁库存
+                // cause:锁库存成功了 但是网络抖动返回超时了  会导致订单回滚 库存不会回滚
+                //为了保证高并发 库存得自己回滚
                 R r = wmsFeignService.lockStock(wareSkuLockVo);
+                //主要是怕库存锁定成功了 后面的代码出问题 比如远程服务返回出问题 或者 后面扣减积分出问题
+                //导致订单以及订单详情回滚库存不回滚的情况
 
                 if (r.getCode() == 0){//锁定成功了
                     response.setOrderEntity(order.getOrderEntity());
+                    //TODO 远程扣减积分 //模拟异常
+                    int i =  10 / 0;
                     return response;
                 }
                 else{
                     response.setCode(3);//3是没库存了
-                    return response;
+                    throw new RuntimeException("没库存了");
                 }
                 //订单号 -->所有订单项
-
-
             }else{
                 //失败
                 response.setCode(2);//金额对比失败
@@ -200,6 +209,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             return response;
         }
 
+    }
+
+    @Override
+    public OrderEntity getStatus(String orderSn) {
+        QueryWrapper<OrderEntity> order_sn = new QueryWrapper<OrderEntity>().eq("order_sn", orderSn);
+        OrderEntity one = getOne(order_sn);
+        return one;
     }
 
     private void save(OrderCreateTo order) {
@@ -268,6 +284,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @return
      */
     private List<OrderItemEntity> buildOrderAllItems(String orderSn) {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+
         List<OrderItemVo> cart = cartFeignService.getCartByUserId();
         if(cart != null && cart.size() > 0){
             List<OrderItemEntity> collect = cart.stream().map((cartItem) -> {
@@ -279,7 +297,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             return  collect;
         }
         return null;
-
     }
 
     /**
@@ -344,6 +361,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setReceiverRegion(addressVo.getRegion());
         orderEntity.setReceiverPostCode(addressVo.getPostCode());
         orderEntity.setReceiverDetailAddress(addressVo.getDetailAddress());
+        orderEntity.setReceiverName(addressVo.getName());
         //收货人信息
         orderEntity.setMemberUsername(addressVo.getName());
         orderEntity.setMemberId(addressVo.getMemberId());
@@ -357,7 +375,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
         return orderEntity;
     }
-
 
 
     /**

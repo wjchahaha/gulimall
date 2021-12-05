@@ -19,6 +19,11 @@
         <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.jc.gulimall</groupId>
             <artifactId>gulimall-common</artifactId>
