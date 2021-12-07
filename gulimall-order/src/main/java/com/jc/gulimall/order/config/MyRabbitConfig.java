@@ -1,5 +1,7 @@
 package com.jc.gulimall.order.config;
 
+import com.jc.common.vo.MqMessage;
+import com.jc.gulimall.order.service.OrderService;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,6 +26,8 @@ public class MyRabbitConfig {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    private OrderService orderService;
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter(){
         return new Jackson2JsonMessageConverter();
@@ -50,41 +54,48 @@ public class MyRabbitConfig {
      *    如何手动确认?
      *      channel.basicAck(deliveryTag,false);       签收 业务成功
      *      channel.basicNack(deliveryTag,false,true); 拒签 业务失败
-     *
      */
 //    MyRabbitConfig执行完构造函数后执行这个函数
-//    @PostConstruct
-//    public void initRabbitTemplate(){
-//
-//        rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
-//            /**
-//             * 只要消息抵达ack==true
-//             * @param correlationData 当前关联的唯一关联数据
-//             * @param ack 消息是否成功收到
-//             * @param cause 失败的原因
-//             */
-//            @Override
-//            public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-//                System.out.println("correlationData====>"+correlationData+",ack===>"+ack+",消息"+cause);
-//            }
-//        });
-//
-//        rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
-//            /**
-//             * 只有消息没有投递给指定的队列 就触发这个失败回调
-//             * @param message  投递失败信息的详细信息
-//             * @param replyCode 回复的状态码
-//             * @param replyText 回复的文本内容
-//             * @param exchange  消息所属交换机
-//             * @param routingKey 消息的路由键
-//             *
-//             *
-//             */
-//            @Override
-//            public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-//                //312  noRoute
-//                System.out.println("Fail Message===>"+message+",replyCode===>"+replyCode+",replyText"+replyText+",exchange===>"+exchange+",routingKey"+routingKey);
-//            }
-//        });
-//    }
+    @PostConstruct
+    public void initRabbitTemplate(){
+        rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
+            /**
+             * 只要消息抵达交换器
+             * @param correlationData 当前关联的唯一关联数据
+             * @param ack 消息是否成功收到
+             * @param cause 失败的原因
+             */
+            @Override
+            public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                    /**
+                     * 1.做好消息确认机制（publisher,consumer[手动ack]）
+                     *2.每一个发送的消息都记录到数据库 定期将失败的消息再次发送
+                     */
+
+                    //同步到数据库 到达
+                //1.到达交换机
+
+                System.out.println("交换机收到了！"+"correlationData====>"+correlationData+",ack===>"+ack+",消息"+cause);
+
+            }
+        });
+
+        rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
+            /**
+             * 注意：这里的回调是一个失败回调。只有消息从Exchange路由到Queue失败才会回调这个方法。
+             * 只有消息没有投递给指定的队列 就触发这个失败回调
+             * @param message  投递失败信息的详细信息
+             * @param replyCode 回复的状态码
+             * @param replyText 回复的文本内容
+             * @param exchange  消息所属交换机
+             * @param routingKey 消息的路由键
+             */
+            @Override
+            public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+                //312  noRoute
+                //消息没有抵达队列--->同步数据到数据库
+                System.out.println("队列没有收到！"+"Fail Message===>"+message+",replyCode===>"+replyCode+",replyText"+replyText+",exchange===>"+exchange+",routingKey"+routingKey);
+            }
+        });
+    }
 }

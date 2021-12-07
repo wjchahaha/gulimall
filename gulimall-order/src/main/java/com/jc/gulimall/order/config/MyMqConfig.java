@@ -32,12 +32,6 @@ import java.util.Map;
 public class MyMqConfig {
 
 
-    @RabbitListener( queues = "order.release.queue")
-    public void listener(OrderEntity orderEntity, Message message, Channel channel) throws IOException {
-        System.out.println("无效订单已收到,订单号："+orderEntity.getOrderSn());
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
-    }
-
     @Bean
     public TopicExchange orderEventExchange(){
 //        String name, boolean durable, boolean autoDelete, Map<String, Object> arguments
@@ -89,6 +83,19 @@ public class MyMqConfig {
                 Binding.DestinationType.QUEUE,
                 "order-event-exchange",
                 "order.release.order",
+                null);
+
+        return binding;
+    }
+
+    @Bean
+    public Binding orderReleaseStockBinding(){
+//        String destination, DestinationType destinationType, String exchange, String routingKey,
+//                @Nullable Map<String, Object> arguments
+        Binding binding = new Binding("stock.release.queue",
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "order.release.other",
                 null);
 
         return binding;

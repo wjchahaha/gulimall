@@ -1,8 +1,10 @@
 package com.jc.gulimall.ware.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.jc.common.constant.OrderConstant;
 import com.jc.common.constant.OrderStatusEnum;
+import com.jc.common.to.OrderTo;
 import com.jc.common.to.mq.StockLockedTo;
 import com.jc.common.utils.R;
 import com.jc.common.vo.MemberEntity;
@@ -232,9 +234,10 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                     //如果订单已被取消了 才能解锁库存
                     WareOrderTaskDetailEntity byId = wareOrderTaskDetailService.getById(to.getDetailId());
                     //如果是锁定状态
+
                     if (byId.getLockStatus() == 1){
-                        byId.setLockStatus(2);//
-                        wareOrderTaskDetailService.updateById(byId);
+//                        byId.setLockStatus(2);//
+//                        wareOrderTaskDetailService.updateById(byId);
                         unlockStock(byId.getSkuId(), byId.getSkuNum(), byId.getTaskId());
                     }
                 }
@@ -245,16 +248,54 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
 
     }
+
+    /**
+     * 解决了 订单延时到达库存自动解锁时 发现订单状态还是新建状态库存永远不能解锁了
+     *
+     *
+     * @param to
+     */
+    @Transactional
+    @Override
+    public void unLockByReleaseOrder(OrderTo to) {
+        String orderSn = to.getOrderSn();
+        //通过oderSn找到对应库存工作单
+        WareOrderTaskEntity taskEntity = wareOrderTaskService.getOne(new QueryWrapper<WareOrderTaskEntity>().eq("order_sn", orderSn));
+
+
+        if(taskEntity != null){
+            //通过库存工作单去找工作单详情上边的
+            List<WareOrderTaskDetailEntity> detailEntities = wareOrderTaskDetailService.list
+                    (new QueryWrapper<WareOrderTaskDetailEntity>().
+                            eq("task_id", taskEntity.getId()).
+                            eq("lock_status", 1));
+
+
+            if (detailEntities != null)
+            for (WareOrderTaskDetailEntity detailEntity : detailEntities) {
+                unlockStock(detailEntity.getSkuId(),detailEntity.getSkuNum(),detailEntity.getId());
+            }
+        }
+
+
+
+
+    }
+
     //进行了优化  原来是 skuId,ware_id,count,taskDetailId
     //虽然多了一次数据库交互 但是大大加快了查询速度用到了主键
     public void  unlockStock(Long sku_id,Integer count,Long taskDetailId){
-        WareSkuEntity wareSkuEntity = this.baseMapper.selectOne(new QueryWrapper<WareSkuEntity>().eq("sku_id", sku_id));
+        //=====解锁库存工作单========
+        WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity();
+        detailEntity.setId(taskDetailId);
+        detailEntity.setLockStatus(2);
+        wareOrderTaskDetailService.updateById(detailEntity);
 
+        //=====解锁库存=====
+        WareSkuEntity wareSkuEntity = this.baseMapper.selectOne(new QueryWrapper<WareSkuEntity>().eq("sku_id", sku_id));
         wareSkuEntity.setStockLocked(wareSkuEntity.getStockLocked() - count);
-        //解锁
         this.updateById(wareSkuEntity);
         System.out.println("=========库存成功解锁=======");
-
     }
     }
 

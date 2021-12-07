@@ -224,7 +224,7 @@ public class SearchServiceImpl implements SearchService {
 //                    String skuTitle = product.getHighlightFields().get("skuTitle").getFragments()[0].string();
 //                    skuEsModel.setSkuTitle(skuTitle);
 //                }
-//                skuEsModelList.add(skuEsModel);
+                skuEsModelList.add(skuEsModel);
             }
             searchResult.setProducts(skuEsModelList);
         }

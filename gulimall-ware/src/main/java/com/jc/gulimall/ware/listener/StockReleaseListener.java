@@ -2,6 +2,7 @@ package com.jc.gulimall.ware.listener;
 
 import com.alibaba.fastjson.TypeReference;
 import com.jc.common.constant.OrderStatusEnum;
+import com.jc.common.to.OrderTo;
 import com.jc.common.to.mq.StockLockedTo;
 import com.jc.common.utils.R;
 import com.jc.gulimall.ware.entity.WareOrderTaskDetailEntity;
@@ -48,5 +49,17 @@ public class StockReleaseListener {
         }
     }
 
+    @RabbitHandler
+    public void handleOrderReleaseStock(OrderTo to, Message message, Channel channel) throws IOException {
+
+        try {
+            wareSkuService.unLockByReleaseOrder(to);
+            //无异常的话 自动确认
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+        }catch (Exception e){
+            //有异常重新入队
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
+        }
+    }
 
 }

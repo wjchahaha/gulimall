@@ -8,6 +8,7 @@ import com.jc.common.constant.OrderConstant;
 import com.jc.common.constant.OrderStatusEnum;
 import com.jc.common.utils.R;
 import com.jc.common.vo.MemberEntity;
+import com.jc.common.vo.MqMessage;
 import com.jc.gulimall.order.entity.OrderItemEntity;
 import com.jc.gulimall.order.feign.CartFeignService;
 import com.jc.gulimall.order.feign.MemberFeignService;
@@ -18,9 +19,13 @@ import com.jc.gulimall.order.service.OrderItemService;
 import com.jc.gulimall.order.to.OrderCreateTo;
 import com.jc.gulimall.order.vo.*;
 import com.rabbitmq.client.Channel;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -49,11 +54,14 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 
 //@RabbitListener(queues = "jc.java.queue")
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
     @Autowired
     private OrderItemService orderItemService;
     @Autowired
@@ -168,7 +176,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 //验价成功
                 //3.TODO 保存订单 以及订单详情
                 save(order);
-                
+
                 //锁定库存  有异常的话回滚
                 List<OrderItemVo> collect = order.getOrderItems().stream().map(item -> {
                     OrderItemVo orderItemVo = new OrderItemVo();
@@ -189,8 +197,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
                 if (r.getCode() == 0){//锁定成功了
                     response.setOrderEntity(order.getOrderEntity());
-                    //TODO 远程扣减积分 //模拟异常
-                    int i =  10 / 0;
+                    //订单创建成功了 发送给延迟队列消息
+                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order.getOrderEntity());
+
+
                     return response;
                 }
                 else{
@@ -211,12 +221,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     }
 
+
     @Override
     public OrderEntity getStatus(String orderSn) {
         QueryWrapper<OrderEntity> order_sn = new QueryWrapper<OrderEntity>().eq("order_sn", orderSn);
         OrderEntity one = getOne(order_sn);
         return one;
     }
+
+    @Override
+    public void closeOrder(OrderEntity orderEntity) {
+        //从数据库查询订单状态
+        OrderEntity byId = this.getById(orderEntity.getId());
+        //超时未支付
+        if (byId == null ||byId.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()){
+
+            OrderEntity entity = new OrderEntity();
+            entity.setStatus(OrderStatusEnum.CANCLED.getCode());
+            entity.setId(orderEntity.getId());
+            this.updateById(entity);
+        }
+    }
+
 
     private void save(OrderCreateTo order) {
         //保存订单
@@ -389,7 +415,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @param channel
      * @throws InterruptedException
      */
-    @RabbitHandler
+//    @RabbitHandler
     public void listening(Message message,OrderEntity orderEntity, Channel channel) throws InterruptedException, IOException {
         System.out.println("接收到消息......"+orderEntity);
 //        Thread.sleep(3000);

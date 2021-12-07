@@ -6,6 +6,8 @@ import com.jc.gulimall.order.entity.OrderEntity;
 import com.jc.gulimall.order.vo.OrderConfirmVo;
 import com.jc.gulimall.order.vo.OrderSubmitVo;
 import com.jc.gulimall.order.vo.SubmitOrderResVo;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -26,5 +28,9 @@ public interface OrderService extends IService<OrderEntity> {
     SubmitOrderResVo submitOrder(OrderSubmitVo vo);
 
     OrderEntity getStatus(String orderSn);
+
+    void closeOrder(OrderEntity orderEntity);
+
+
 }
 

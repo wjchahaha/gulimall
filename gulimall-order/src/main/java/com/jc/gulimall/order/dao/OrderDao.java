@@ -1,8 +1,11 @@
 package com.jc.gulimall.order.dao;
 
+import com.jc.common.vo.MqMessage;
 import com.jc.gulimall.order.entity.OrderEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.amqp.core.Message;
 
 /**
  * 订单
@@ -13,5 +16,12 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface OrderDao extends BaseMapper<OrderEntity> {
-	
+
+    void saveMqMessage(@Param("statuc") String statusm,@Param("message_id") String message_id);
+
+    void updateStatus(@Param("message_id") String messageId
+            , @Param("status") String status
+           );
+
+    void saveMqToSent(@Param("mq") MqMessage mqMessage);
 }

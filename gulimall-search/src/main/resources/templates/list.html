@@ -64,10 +64,11 @@
         </b>
         <ul>
             <li>
-                <a href="/static/search/#" class="li_2">你好，请登录</a>
+                <a th:if="${session.user == null}" href="/static/search/#" class="li_2">你好，请登录</a>
+                <a th:if="${session.user != null}" href="/static/search/#" class="li_2">你好[[${session.user.nickname}]]</a>
             </li>
             <li>
-                <a href="/static/search/#">免费注册</a>
+                <a th:if="${session.user == null}" href="http:auth.gulimall.com/reg.html">免费注册</a>
             </li>
             <span>|</span>
             <li>
@@ -402,8 +403,8 @@
         <a href="http://gulimall.com"><img src="/static/search/./image/logo1.jpg" alt=""></a>
     </div>
     <div class="header_form">
-        <input type="text" placeholder="手机"/>
-        <a href="/static/search/#">搜索</a>
+        <input id="keyword" type="text" placeholder="手机"/>
+        <a href="javascript:searchByKeyword()">搜索</a>
     </div>
     <div class="header_ico">
         <div class="header_gw">
@@ -785,13 +786,13 @@
                         <span><b>品牌：</b></span>
                     </div>
                     <div class="sl_value">
-<!--                        品牌-->
+                        <!--                        品牌-->
                         <div class="sl_value_logo">
                             <ul>
                                 <li th:each="brand:${result.brands}">
-                                    <a th:href="${'javascript:searchProducts(&quot;brandId&quot;,'+brand.brandId+')'}" >
-                                        <img style="width: 118px;height:50px;padding: 0px" th:src="${brand.brandImg}" >
-                                        <div >
+                                    <a th:href="${'javascript:searchProducts(&quot;brandId&quot;,'+brand.brandId+')'}">
+                                        <img style="width: 118px;height:50px;padding: 0px" th:src="${brand.brandImg}">
+                                        <div>
 
                                             <span th:text="${brand.brandName}"></span>
                                         </div>
@@ -820,11 +821,13 @@
                     </div>
                     <div class="sl_value">
                         <!--    分类-->
+                        <ul>
                             <ul>
-                                <ul>
-                                    <li th:each="catalog:${result.catalogs}"><a th:href="${'javascript:searchProducts(&quot;catalog3Id&quot;,'+catalog.catalogId+')'}" th:text="${catalog.catalogName}">5.56英寸及以上</a></li>
-                                </ul>
+                                <li th:each="catalog:${result.catalogs}"><a
+                                        th:href="${'javascript:searchProducts(&quot;catalog3Id&quot;,'+catalog.catalogId+')'}"
+                                        th:text="${catalog.catalogName}">5.56英寸及以上</a></li>
                             </ul>
+                        </ul>
                     </div>
                     <div class="sl_ext">
                         <a href="/static/search/#">
@@ -848,10 +851,12 @@
                     </div>
                     <div class="sl_value">
                         <ul>
-                            <li th:each="attrvalue:${attr.attrValue}"><a th:href="${'javascript:searchProducts(&quot;attrs&quot;,&quot;'+attr.attrId+'_'+attrvalue+'&quot;)'}"  th:text="${attrvalue}">5.56英寸及以上</a></li>
+                            <li th:each="attrvalue:${attr.attrValue}"><a
+                                    th:href="${'javascript:searchProducts(&quot;attrs&quot;,&quot;'+attr.attrId+'_'+attrvalue+'&quot;)'}"
+                                    th:text="${attrvalue}">5.56英寸及以上</a></li>
                         </ul>
                     </div>
-    
+
                 </div>
 
             </div>
@@ -1174,16 +1179,17 @@
 
                     </div>
                     <!--排序内容-->
-                    <div class="rig_tab" th:each="product:${result.getProducts()}">
+                    <!--                    商品内容-->
+                    <span>1111</span>
+                    <div class="rig_tab" th:each="product:${result.products}">
                         <div>
                             <div class="ico">
                                 <i class="iconfont icon-weiguanzhu"></i>
                                 <a href="/static/search/#">关注</a>
                             </div>
                             <p class="da">
-                                <a href="/static/search/#"
-                                   title="购买AppleCare+，获得原厂2年整机保修(含电池)，和多达2次意外损坏的保修服务。购买勾选：保障服务、原厂保2年。">
-                                    <img th:src="${product.getSkuImg()}" class="dim">
+                                <a th:href="|http://item.gulimall.com/${product.skuId}.html|">
+                              <img th:src="${product.getSkuImg()}" class="dim">
                                 </a>
                             </p>
                             <ul class="tab_im">
@@ -1990,12 +1996,17 @@
     }, function () {
         $(this).css("color", "#727272")
     })
-    function searchProducts(name,value) {
-        if(location.href.indexOf("?") != -1)
-            location.href += "&"+name+"="+value;
-        else{
-            location.href += "?"+name+"="+value;
+
+    function searchProducts(name, value) {
+        if (location.href.indexOf("?") != -1)
+            location.href += "&" + name + "=" + value;
+        else {
+            location.href += "?" + name + "=" + value;
         }
+    }
+    function searchByKeyword() {
+
+        searchProducts("keyword",$("#keyword").val())
     }
 </script>
 </body>

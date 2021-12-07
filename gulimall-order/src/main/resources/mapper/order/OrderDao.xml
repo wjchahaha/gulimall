@@ -49,5 +49,20 @@
         <result property="modifyTime" column="modify_time"/>
     </resultMap>
 
+    <insert id="saveMqToSent" parameterType="com.jc.common.vo.MqMessage">
+        insert into `mq_message` values
+        (#{mq.messageId},#{mq.content},#{mq.toExchange},#{mq.classType},#{mq.messageStatus},#{mq.createTime},#{mq.updateTime})
+    </insert>
+
+
+    <update id="updateStatus">
+        update `mq_message` set message_status = #{status}  where message_id = #{message_id}
+    </update>
+
+    <update id="saveMqMessage">
+        update `mq_message` set message_status = #{status}
+        where message_id = #{message_id}
+    </update>
+
 
 </mapper>

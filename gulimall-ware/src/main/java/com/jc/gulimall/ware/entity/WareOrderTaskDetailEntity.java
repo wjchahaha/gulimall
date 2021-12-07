@@ -8,6 +8,7 @@ import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 库存工作单
@@ -16,6 +17,7 @@ import lombok.Data;
  * @email 1678912421@gmail.com
  * @date 2021-07-17 11:34:53
  */
+@NoArgsConstructor
 @AllArgsConstructor
 @Data
 @TableName("wms_ware_order_task_detail")
